@@ -1,0 +1,9 @@
+.banner {
+    position: sticky;
+    border-bottom: 0.2vh solid var(--foreground);
+}
+
+.logo {
+    filter: var(--is-dark-theme, invert());
+}
+
