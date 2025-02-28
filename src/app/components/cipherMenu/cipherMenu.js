@@ -17,10 +17,10 @@ const CipherMenu = ({activeTab, setActiveTab, children}) => {
                         <Nav.Link className={activeTab == 1 ? "active" : ""} onClick={() => setActiveTab(1)}>Decrypt</Nav.Link>
                     </Nav.Item>
                     <Nav.Item className="me-2">
-                        <Nav.Link className={activeTab == 2 ? "active" : ""} onClick={() => setActiveTab(2)}>Cryptanalyse</Nav.Link>
+                        <Nav.Link className={activeTab == 2 ? "active" : ""} onClick={() => setActiveTab(2)} disabled>Cryptanalyse</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link className={activeTab == 3 ? "active" : ""} onClick={() => setActiveTab(3)}>Explain</Nav.Link>
+                        <Nav.Link className={activeTab == 3 ? "active" : ""} onClick={() => setActiveTab(3)} disabled>Explain</Nav.Link>
                     </Nav.Item>
                 </Nav>
             </Row>
