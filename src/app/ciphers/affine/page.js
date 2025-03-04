@@ -4,6 +4,7 @@ import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import GuidelineArrow from "@/app/components/guidelineArrow/guidelineArrow";
+import InvertMod from "@/app/utilities/moduloOperations";
 
 
 const Home = () => {
@@ -13,8 +14,8 @@ const Home = () => {
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
     const [key, setKey] = useState({
-        A: 0,
-        b: 0
+        A: "",
+        b: ""
     });
 
     const encrypt = (plaintext, key) => {
@@ -36,10 +37,11 @@ const Home = () => {
 
         var asciiIndexInput = 'A'.charCodeAt(0);
         var asciiIndexOutput = 'a'.charCodeAt(0);
+        var ainv = InvertMod(key.A, 26)
 
         ciphertext.split("").forEach((character) => {
             var charCode = character.charCodeAt(0);
-            decryptedChars.push(String.fromCharCode(((charCode - asciiIndexInput - key) % 26 + 26) % 26 + asciiIndexOutput)); // FINISH THIS ONE OFF
+            decryptedChars.push(String.fromCharCode((ainv * (charCode - asciiIndexInput - key.b) % 26 + 26) % 26 + asciiIndexOutput)); // FINISH THIS ONE OFF
         })
 
         return decryptedChars.join("");
@@ -86,9 +88,10 @@ const Home = () => {
                         </Form.Label>
                         <div className="d-flex flex-xl-column flex-xxl-column gap-1">
                             <InputGroup>
-                                <Form.Control type="number" value={key} onChange={(e) => setKey({...key, A: parseInt(e.target.value)})} placeholder="A"></Form.Control>
+                                <Form.Control type="number" value={key.A} min={1} max={26} step={2}  placeholder="A"
+                                onChange={(e) => {if (e.target.value % 2 != 0 && e.target.value < 26) setKey({...key, A: parseInt(e.target.value)})}}></Form.Control>
                                 <InputGroup.Text>x + </InputGroup.Text>
-                                <Form.Control type="number" value={key} onChange={(e) => setKey({...key, b: parseInt(e.target.value)})} placeholder="b"></Form.Control>
+                                <Form.Control type="number" value={key.b} onChange={(e) => setKey({...key, b: parseInt(e.target.value)})} placeholder="b"></Form.Control>
                             </InputGroup>
                             <Button variant="primary" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
