@@ -4,8 +4,7 @@ import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import GuidelineArrow from "@/app/components/guidelineArrow/guidelineArrow";
-import InvertMod from "@/app/utilities/moduloOperations";
-
+import InvertMod from "@/app/utilities/MathUtils";
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);

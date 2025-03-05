@@ -25,3 +25,21 @@ body {
   background: var(--background);
   font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
 }
+
+
+.gridInputTop input {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.gridInputMiddle input {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.gridInputBottom input {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}

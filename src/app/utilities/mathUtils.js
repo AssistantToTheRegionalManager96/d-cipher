@@ -1,6 +1,7 @@
+
 const InvertMod = (input, modulo) => {
     // Insert a check to see if input is coprime to modulo
-    if (!FindCoprimesSmallerThan(modulo).contains(input)) throw new Error("The input must be a coprime of the modulo");
+    if (!FindCoprimesSmallerThan(modulo).includes(input)) throw new Error("The input must be a coprime of the modulo");
 
     var inv = 0;
     while((input * inv) % modulo != 1) inv = inv + 1;
