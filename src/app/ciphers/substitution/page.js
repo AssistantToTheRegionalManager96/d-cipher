@@ -45,12 +45,8 @@ const Home = () => {
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
 
-        var asciiIndexInput = 'a'.charCodeAt(0);
-        var asciiIndexOutput = 'A'.charCodeAt(0);
-
         plaintext.split("").forEach((character) => {
-            var charCode = character.charCodeAt(0);
-            encryptedChars.push(String.fromCharCode(((charCode - asciiIndexInput) * key.A + key.b) % 26 + asciiIndexOutput));
+            encryptedChars.push(key[character]);
         })
 
         return encryptedChars.join("");
@@ -59,13 +55,8 @@ const Home = () => {
     const decrypt = (ciphertext, key) => {
         var decryptedChars = [];
 
-        var asciiIndexInput = 'A'.charCodeAt(0);
-        var asciiIndexOutput = 'a'.charCodeAt(0);
-        var ainv = InvertMod(key.A, 26)
-
         ciphertext.split("").forEach((character) => {
-            var charCode = character.charCodeAt(0);
-            decryptedChars.push(String.fromCharCode((ainv * (charCode - asciiIndexInput - key.b) % 26 + 26) % 26 + asciiIndexOutput)); // FINISH THIS ONE OFF
+            decryptedChars.push(Object.entries(key).filter(entry => entry[1] == character)[0][0]); // FINISH THIS ONE OFF
         })
 
         return decryptedChars.join("");
