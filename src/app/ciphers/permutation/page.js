@@ -12,18 +12,23 @@ const Home = () => {
     const [ciphertext, setCiphertext] = useState("");
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
-    const [key, setKey] = useState(0);
+    const [key, setKey] = useState("");
 
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
 
-        var asciiIndexInput = 'a'.charCodeAt(0);
-        var asciiIndexOutput = 'A'.charCodeAt(0);
+        for (var i = 0; i < plaintext.length % key.length; i++) plaintext = plaintext + "x";
 
-        plaintext.split("").forEach((character) => {
-            var charCode = character.charCodeAt(0);
-            encryptedChars.push(String.fromCharCode((charCode - asciiIndexInput + key) % 26 + asciiIndexOutput));
-        })
+        var k = 0;
+
+        for (var i = 0; i < plaintext.length; i++)
+        {
+            console.log(key[k]);
+            encryptedChars.push(plaintext[parseInt(key[k]) + ((Math.floor(i/key.length)) * key.length)]);
+            k = (k + 1) % key.length;
+        }
+        
+        // NEED TO RETHINK INPUT
 
         return encryptedChars.join("");
     }
@@ -40,6 +45,11 @@ const Home = () => {
         })
 
         return decryptedChars.join("");
+    }
+
+    const handleKeyChange = (value) => {
+        var newValue = value.replace(/[^\d.-]+/g, '');
+        setKey(newValue);
     }
 
     const handleRunButton = () => {
@@ -83,7 +93,7 @@ const Home = () => {
                         </Form.Label>
                         <div className="d-flex flex-xl-column flex-xxl-column gap-1">
                             <InputGroup>
-                                <Form.Control type="text" value={key} onChange={(e) =>  {}}></Form.Control>
+                                <Form.Control type="text" value={key} onChange={(e) =>  {handleKeyChange(e.target.value)}}></Form.Control>
                             </InputGroup>
                             <Button variant="primary" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>

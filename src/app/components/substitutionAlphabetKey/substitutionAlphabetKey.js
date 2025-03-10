@@ -14,6 +14,7 @@ const SubstitutionAlphabetKey = ({ substitutionKey, setSubsitutionKey }) => {
     const handleGridUpdate = (index, value) => {
         var oldValue = substitutionKey[index];
         var newValue = value.replace(/[^a-z]/gi, '').toUpperCase();
+        if (newValue == "") return;
 
         var oldIndexOfNewValue = Object.entries(substitutionKey).filter(x => x[1] == newValue.toUpperCase())[0][0];
         setSubsitutionKey({...substitutionKey, [index]: newValue.toUpperCase(), [oldIndexOfNewValue]: oldValue});
