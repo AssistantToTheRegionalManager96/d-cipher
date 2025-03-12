@@ -1,6 +1,5 @@
 import { createRef, useEffect, useRef, useState } from "react";
-
-const { Stack, InputGroup, Form } = require("react-bootstrap")
+import { Stack, InputGroup, Form} from 'react-bootstrap'
 
 const SubstitutionAlphabetKey = ({ substitutionKey, setSubsitutionKey }) => {
 

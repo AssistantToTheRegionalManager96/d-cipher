@@ -4,6 +4,7 @@ import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import GuidelineArrow from "@/app/components/guidelineArrow/guidelineArrow";
+import KeyGrid from "@/app/components/keyGrid/keyGrid";
 
 
 const Home = () => {
@@ -23,7 +24,6 @@ const Home = () => {
 
         for (var i = 0; i < plaintext.length; i++)
         {
-            console.log(key[k]);
             encryptedChars.push(plaintext[parseInt(key[k]) + ((Math.floor(i/key.length)) * key.length)]);
             k = (k + 1) % key.length;
         }
@@ -34,17 +34,16 @@ const Home = () => {
     }
 
     const decrypt = (ciphertext, key) => {
-        var decryptedChars = [];
+        // Invert key
+        var keyArray = key.split("");
+        var keyInv = [];
 
-        var asciiIndexInput = 'A'.charCodeAt(0);
-        var asciiIndexOutput = 'a'.charCodeAt(0);
+        for (var i = 0; i < key.length; i++) {
+            keyInv.push(keyArray.indexOf(i.toString()));
+        }
 
-        ciphertext.split("").forEach((character) => {
-            var charCode = character.charCodeAt(0);
-            decryptedChars.push(String.fromCharCode(((charCode - asciiIndexInput - key) % 26 + 26) % 26 + asciiIndexOutput));
-        })
-
-        return decryptedChars.join("");
+        // Encrypt using inverted key
+        return encrypt(ciphertext, keyInv.join(""));
     }
 
     const handleKeyChange = (value) => {
@@ -92,9 +91,10 @@ const Home = () => {
                             Key
                         </Form.Label>
                         <div className="d-flex flex-xl-column flex-xxl-column gap-1">
-                            <InputGroup>
+                            <KeyGrid value={{a: 'A', b: 'B', c: 'C', d: 'D', e: 'E', f: 'F', g: 'G'}}  itemsPerRow={3} />
+                            {/* <InputGroup>
                                 <Form.Control type="text" value={key} onChange={(e) =>  {handleKeyChange(e.target.value)}}></Form.Control>
-                            </InputGroup>
+                            </InputGroup> */}
                             <Button variant="primary" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                         </div>
