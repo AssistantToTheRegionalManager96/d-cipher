@@ -27,10 +27,10 @@ const KeyGrid = ({ value, handleUpdate, showLabels = false, itemsPerRow = 10 }) 
         switch (keydown) {
             default: break;
             case "ArrowRight":
-                setCurrentIndex({...currentIndex, x: (currentIndex.x + 1) % itemsPerRow})
+                setCurrentIndex({...currentIndex, x: ((currentIndex.x + 1) % grid[currentIndex.y].length)})
                 break;
             case "ArrowLeft":
-                setCurrentIndex({...currentIndex, x: ((currentIndex.x - 1) % itemsPerRow + itemsPerRow) % itemsPerRow})
+                setCurrentIndex({...currentIndex, x: ((currentIndex.x - 1) % grid[currentIndex.y].length + grid[currentIndex.y].length) % grid[currentIndex.y].length})
                 break;
             case "ArrowDown":
                 var indexToTheBottom = (grid.indexOf(currentIndex) + 13) % 26;
@@ -58,58 +58,7 @@ const KeyGrid = ({ value, handleUpdate, showLabels = false, itemsPerRow = 10 }) 
             return (<KeyGridRow key={index} values={row} rowIndex={index} showLabels={false} rowType={rowType} itemsPerRow={itemsPerRow} 
                     handleUpdate={(index, value) => handleGridUpdate(index, value)} handleNavigation={(navigationKey) => handleIndexNavigation(navigationKey)} 
                     handleFocus={(index) => setCurrentIndex(index)}/>)
-
-            // if (customKeyLabels == "") {
-            //     row = <InputGroup key={x.reduce((prev, curr) => prev + curr.key, '')} className={rowType}>
-            //     {x.map(y => {
-            //         return (<Form.Control key={y.key} size="sm" className="text-center" type="text" placeholder={substitutionKey[y.key]} value=""
-            //             onChange={(e) => handleGridUpdate(y.key, e.target.value)} onKeyDown={(e) => handleIndexNavigation(e.key)}
-            //             onFocus={() => setCurrentIndex(y.key)} ref={y.value}></Form.Control>)
-            //     })}
-            //     {paddingElements}
-            //     </InputGroup>
-            // }
-            // else {
-
-            // }
-
-        
-            // return (<InputGroup key={x.reduce((prev, curr) => prev + curr.key, '')} className={rowType}>
-            //     {x.map(y => {
-            //         return (<Form.Control key={y.key} size="sm" className="text-center" type="text" placeholder={substitutionKey[y.key]} value=""
-            //             onChange={(e) => handleGridUpdate(y.key, e.target.value)} onKeyDown={(e) => handleIndexNavigation(e.key)}
-            //             onFocus={() => setCurrentIndex(y.key)} ref={y.value}></Form.Control>)
-            //     })}
-            //     {paddingElements}
-            // </InputGroup>)
         })}
-
-
-
-        {/* <InputGroup className="gridInputTop">
-            {firstRowChars.map((character) => {
-                    return (<Form.Control key={character} size="sm" className="text-center" type="text" value={character} disabled></Form.Control>)
-                })}
-        </InputGroup>
-        <InputGroup className="gridInputMiddle">
-            {firstRowChars.map((character) => {
-                return (<Form.Control key={character} size="sm" className="text-center" type="text" placeholder={substitutionKey[character]} value="" 
-                    onChange={(e) => handleGridUpdate(character, e.target.value)} onKeyDown={(e) => handleIndexNavigation(e.key)} 
-                    onFocus={() => setCurrentIndex(character)} ref={grid[character]}></Form.Control>)
-            })}
-        </InputGroup>
-        <InputGroup className="gridInputMiddle">
-            {secondRowChars.map((character) => {
-                return (<Form.Control key={character} size="sm" className="text-center" type="text" placeholder={substitutionKey[character]} value="" 
-                    onChange={(e) => handleGridUpdate(character, e.target.value)} onKeyDown={(e) => handleIndexNavigation(e.key)} 
-                    onFocus={() => setCurrentIndex(character)} ref={grid[character]}></Form.Control>)
-            })}
-        </InputGroup>
-        <InputGroup className="gridInputBottom">
-            {secondRowChars.map((character) => {
-                    return (<Form.Control key={character} size="sm" className="text-center" type="text" value={character} disabled></Form.Control>)
-                })}
-        </InputGroup> */}
     </Stack>)
 }
 
