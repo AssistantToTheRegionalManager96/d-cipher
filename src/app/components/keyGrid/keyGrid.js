@@ -3,26 +3,29 @@ import { createRef, useEffect, useRef, useState } from "react";
 import { Stack, InputGroup, Form} from 'react-bootstrap'
 import KeyGridRow from "../keyGridRow/keyGridRow";
 
-const KeyGrid = ({ value, handleUpdate, showLabels = false, itemsPerRow = 10 }) => {
+const KeyGrid = ({ keyValue, handleKeyUpdate, showLabels = false, itemsPerRow = 10 }) => {
 
-    // const grid = Object.entries(value).reduce((arr, val) => ({...arr, [val[0]]: ({value: val[1], reference: createRef()})}), {});
-    var grid = Chunk(Object.entries(value).map(entry => ({index: entry[0], value: entry[1], reference: createRef()})), itemsPerRow);
-
+    var grid = Chunk(Object.entries(keyValue).map(entry => ({index: entry[0], value: entry[1], reference: createRef()})), itemsPerRow);
     const container = useRef();
     const [currentIndex, setCurrentIndex] = useState({x: "", y: ""});
 
-    // const handleGridUpdate = (index, value) => {
-    //     var oldValue = substitutionKey[index];
-    //     var newValue = value.replace(/[^a-z]/gi, '').toUpperCase();
-    //     if (newValue == "") return;
+    const handleGridUpdate = (index, value) => {
+        var currentValue = grid[index.y][index.x].value;
+        var currentIndex = grid[index.y][index.x].index;
 
-    //     var oldIndexOfNewValue = Object.entries(substitutionKey).filter(x => x[1] == newValue.toUpperCase())[0][0];
-    //     setSubsitutionKey({...substitutionKey, [index]: newValue.toUpperCase(), [oldIndexOfNewValue]: oldValue});
-    // }
+        var keyArray = Object.entries(keyValue);
+        var newValue;
+
+        if (keyArray.filter(x => x[1] == value).length != 0) newValue = value;
+        else if (keyArray.filter(x => x[1] == value.toUpperCase()).length != 0) newValue = value.toUpperCase();
+        else if (keyArray.filter(x => x[1] == value.toLowerCase()).length != 0) newValue = value.toLowerCase();
+        else return; 
+
+        var previousIndexOfNewValue = keyArray.filter(x => x[1] == newValue)[0][0];
+        handleKeyUpdate({...keyValue, [currentIndex]: newValue, [previousIndexOfNewValue]: currentValue});
+    }
 
     const handleIndexNavigation = (keydown) => {
-        console.log(keydown);
-        console.log(currentIndex);
 
         switch (keydown) {
             default: break;
@@ -33,12 +36,14 @@ const KeyGrid = ({ value, handleUpdate, showLabels = false, itemsPerRow = 10 }) 
                 setCurrentIndex({...currentIndex, x: ((currentIndex.x - 1) % grid[currentIndex.y].length + grid[currentIndex.y].length) % grid[currentIndex.y].length})
                 break;
             case "ArrowDown":
-                var indexToTheBottom = (grid.indexOf(currentIndex) + 13) % 26;
-                setCurrentIndex({...currentIndex, y: (currentIndex.y + 1) % grid.length})
+                var ynew = (currentIndex.y + 1) % grid.length;
+                if (currentIndex.x > grid[ynew].length - 1) ynew = 0;
+                setCurrentIndex({...currentIndex, y: ynew})
                 break;
             case "ArrowUp":
-                var indexToTheTop = ((grid.indexOf(currentIndex) - 13) % 26 + 26) % 26;
-                setCurrentIndex(grid[indexToTheTop])
+                var ynew = ((currentIndex.y - 1) % grid.length + grid.length) % grid.length;
+                if (currentIndex.x > grid[ynew].length - 1) ynew = ((ynew - 1) % grid.length + grid.length) % grid.length;
+                setCurrentIndex({...currentIndex, y: ynew})
                 break;
         }
     }

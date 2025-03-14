@@ -13,7 +13,14 @@ const Home = () => {
     const [ciphertext, setCiphertext] = useState("");
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
-    const [key, setKey] = useState("");
+    const [key, setKey] = useState({
+        0: '0',
+        1: '1',
+        2: '2',
+        3: '3',
+        4: '4'
+    });
+    const [keyLength, setKeyLength] = useState(5);
 
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
@@ -46,10 +53,33 @@ const Home = () => {
         return encrypt(ciphertext, keyInv.join(""));
     }
 
-    const handleKeyChange = (value) => {
-        var newValue = value.replace(/[^\d.-]+/g, '');
-        setKey(newValue);
+    const handleKeyLengthChange = (value) => {
+        var length = parseInt(value);
+
+        if (isNaN(length) || length > 10 || length < 2) return;
+
+        var keyArray = Object.entries(key);
+
+
+        if (length == keyArray.length) return;
+        else if (length < keyArray.length) {
+            while(length < keyArray.length) {
+                var last = keyArray.pop();
+
+                var idx = keyArray.findIndex((element) => element[1] == last[0]);
+                ~idx && (keyArray[idx][1] = last[1]);
+            }
+        }
+        else {
+            for (var i = keyArray.length; i < length; i++) {
+                keyArray.push([i.toString(), i.toString()])
+            }
+        }
+
+        setKey(Object.fromEntries(keyArray));
+        setKeyLength(length);
     }
+
 
     const handleRunButton = () => {
         if (activeTab == 0) {
@@ -90,11 +120,12 @@ const Home = () => {
                         <Form.Label>
                             Key
                         </Form.Label>
+                        <InputGroup className="mb-1">
+                            <InputGroup.Text>Length</InputGroup.Text>
+                            <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
+                        </InputGroup>
                         <div className="d-flex flex-xl-column flex-xxl-column gap-1">
-                            <KeyGrid value={{a: 'A', b: 'B', c: 'C', d: 'D', e: 'E', f: 'F', g: 'G'}}  itemsPerRow={3} />
-                            {/* <InputGroup>
-                                <Form.Control type="text" value={key} onChange={(e) =>  {handleKeyChange(e.target.value)}}></Form.Control>
-                            </InputGroup> */}
+                            <KeyGrid keyValue={key} handleKeyUpdate={(keyValue) => setKey(keyValue)}  itemsPerRow={5} />
                             <Button variant="primary" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                         </div>
