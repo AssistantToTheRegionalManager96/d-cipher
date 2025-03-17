@@ -28,25 +28,24 @@ const Home = () => {
         for (var i = 0; i < plaintext.length % key.length; i++) plaintext = plaintext + "x";
 
         var k = 0;
+        var keyLength = Object.entries(key).length;
 
         for (var i = 0; i < plaintext.length; i++)
         {
-            encryptedChars.push(plaintext[parseInt(key[k]) + ((Math.floor(i/key.length)) * key.length)]);
-            k = (k + 1) % key.length;
+            encryptedChars.push(plaintext[parseInt(key[k]) + ((Math.floor(i/keyLength)) * keyLength)]);
+            k = (k + 1) % keyLength;
         }
-        
-        // NEED TO RETHINK INPUT
 
         return encryptedChars.join("");
     }
 
     const decrypt = (ciphertext, key) => {
         // Invert key
-        var keyArray = key.split("");
-        var keyInv = [];
+        var keyArray = Object.entries(key);
+        var keyInv = new Array(keyArray.length);
 
-        for (var i = 0; i < key.length; i++) {
-            keyInv.push(keyArray.indexOf(i.toString()));
+        for (var i = 0; i < keyArray.length; i++) {
+            keyInv[keyArray[i][1]] = keyArray[i][0]
         }
 
         // Encrypt using inverted key
@@ -56,10 +55,9 @@ const Home = () => {
     const handleKeyLengthChange = (value) => {
         var length = parseInt(value);
 
-        if (isNaN(length) || length > 10 || length < 2) return;
+        if (isNaN(length) || length > 100 || length < 2) return;
 
         var keyArray = Object.entries(key);
-
 
         if (length == keyArray.length) return;
         else if (length < keyArray.length) {
@@ -125,7 +123,7 @@ const Home = () => {
                             <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
                         </InputGroup>
                         <div className="d-flex flex-xl-column flex-xxl-column gap-1">
-                            <KeyGrid keyValue={key} handleKeyUpdate={(keyValue) => setKey(keyValue)}  itemsPerRow={5} />
+                            <KeyGrid keyValue={key} showLabels={true} handleKeyUpdate={(keyValue) => setKey(keyValue)}  itemsPerRow={5} />
                             <Button variant="primary" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                         </div>

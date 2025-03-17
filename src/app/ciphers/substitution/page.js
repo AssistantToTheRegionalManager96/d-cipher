@@ -6,6 +6,7 @@ import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-boot
 import GuidelineArrow from "@/app/components/guidelineArrow/guidelineArrow";
 import InvertMod from "@/app/utilities/MathUtils";
 import SubstitutionAlphabetKey from "@/app/components/substitutionAlphabetKey/substitutionAlphabetKey";
+import KeyGrid from "@/app/components/keyGrid/keyGrid";
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -102,7 +103,7 @@ const Home = () => {
                             Key
                         </Form.Label>
                         <div className="d-flex flex-xl-column flex-xxl-column gap-1">
-                            <SubstitutionAlphabetKey substitutionKey={key} setSubsitutionKey={setKey}/>
+                            <KeyGrid keyValue={key} showLabels={true} handleKeyUpdate={(keyValue) => setKey(keyValue)}  itemsPerRow={13} />
 
                             <Button variant="primary" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>

@@ -16,10 +16,12 @@ const KeyGrid = ({ keyValue, handleKeyUpdate, showLabels = false, itemsPerRow = 
         var keyArray = Object.entries(keyValue);
         var newValue;
 
-        if (keyArray.filter(x => x[1] == value).length != 0) newValue = value;
+        if (keyArray.filter(x => x[1] == currentValue + value.toUpperCase()).length != 0) newValue = currentValue + value.toUpperCase();
+        else if (keyArray.filter(x => x[1] == currentValue + value.toLowerCase()).length != 0) newValue = currentValue + value.toLowerCase();
+        else if (keyArray.filter(x => x[1] == value).length != 0) newValue = value;
         else if (keyArray.filter(x => x[1] == value.toUpperCase()).length != 0) newValue = value.toUpperCase();
         else if (keyArray.filter(x => x[1] == value.toLowerCase()).length != 0) newValue = value.toLowerCase();
-        else return; 
+        else return;
 
         var previousIndexOfNewValue = keyArray.filter(x => x[1] == newValue)[0][0];
         handleKeyUpdate({...keyValue, [currentIndex]: newValue, [previousIndexOfNewValue]: currentValue});
@@ -56,11 +58,13 @@ const KeyGrid = ({ keyValue, handleKeyUpdate, showLabels = false, itemsPerRow = 
     <Stack gap={0} ref={container}>
         {grid.map((row, index) => {
             var rowType;
-            if (index == 0) rowType = 0;
-            else if (index < row.length - 1) rowType = 1;
-            else rowType = 2;
 
-            return (<KeyGridRow key={index} values={row} rowIndex={index} showLabels={false} rowType={rowType} itemsPerRow={itemsPerRow} 
+            if (grid.length == 1) rowType = 0;
+            else if (index == 0) rowType = 1
+            else if (index < grid.length - 1) rowType = 2;
+            else rowType = 3;
+
+            return (<KeyGridRow key={index} values={row} rowIndex={index} showLabels={showLabels} rowType={rowType} itemsPerRow={itemsPerRow} 
                     handleUpdate={(index, value) => handleGridUpdate(index, value)} handleNavigation={(navigationKey) => handleIndexNavigation(navigationKey)} 
                     handleFocus={(index) => setCurrentIndex(index)}/>)
         })}

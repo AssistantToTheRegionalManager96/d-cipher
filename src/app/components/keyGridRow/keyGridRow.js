@@ -9,16 +9,20 @@ const KeyGridRow = ({ values, rowIndex, showLabels = false, rowType, itemsPerRow
         var labelsRowType = '';
 
         if (rowType == 0) {
-            valuesRowType = 'gridInputTop';
-            labelsRowType = 'gridInputMiddle'
+            labelsRowType = 'gridInputTop';
+            valuesRowType = showLabels ? 'gridInputBottom' : ''
         }
         else if (rowType == 1) {
-            valuesRowType = 'gridInputMiddle';
-            labelsRowType = 'gridInputMiddle';
+            labelsRowType = 'gridInputTop';
+            valuesRowType = showLabels ? 'gridInputMiddle' : 'gridInputTop';
         }
         else if (rowType == 2) {
-            valuesRowType = showLabels ? 'gridInputMiddle' : 'gridInputBottom';
-            labelsRowType = 'gridInputBottom';
+            labelsRowType = 'gridInputMiddle';
+            valuesRowType = 'gridInputMiddle';
+        }
+        else if (rowType == 3) {
+            labelsRowType = 'gridInputMiddle';
+            valuesRowType = 'gridInputBottom';
         }
 
         var paddingElements = [];
@@ -43,7 +47,7 @@ const KeyGridRow = ({ values, rowIndex, showLabels = false, rowType, itemsPerRow
         </InputGroup>
         )
 
-        if (showLabels) return (<>{valueGroup}{labelGroup}</>)
+        if (showLabels) return (<>{labelGroup}{valueGroup}</>)
         else return (<>{valueGroup}</>)
     }
 
