@@ -3,7 +3,6 @@ import { useState } from "react";
 import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
-import GuidelineArrow from "@/app/components/guidelineArrow/guidelineArrow";
 import KeyGrid from "@/app/components/keyGrid/keyGrid";
 
 
@@ -18,14 +17,19 @@ const Home = () => {
         1: '1',
         2: '2',
         3: '3',
-        4: '4'
+        4: '4',
+        5: '5',
+        6: '6',
+        7: '7',
+        8: '8',
+        9: '9'
     });
-    const [keyLength, setKeyLength] = useState(5);
+    const [keyLength, setKeyLength] = useState(10);
 
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
 
-        for (var i = 0; i < plaintext.length % key.length; i++) plaintext = plaintext + "x";
+        // for (var i = 0; i < plaintext.length % key.length; i++) plaintext = plaintext + "x"; // Uncomment for padding
 
         var k = 0;
         var keyLength = Object.entries(key).length;
@@ -102,44 +106,54 @@ const Home = () => {
                 <CipherMenu activeTab={activeTab} setActiveTab={setActiveTab}>Permutation Cipher</CipherMenu>
             </Row>
 
-            <Form as={Row} className="mt-5">
-                <Col xs={12} sm={12} md={12} lg={12} xl={4}  xxl={4} className="d-flex align-items-center mb-1">
+            <Row className="mt-5 border rounded p-2">
+                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
                     <CryptographicTextArea mode="plaintext" value={plaintext} lastUsedValue={lastUsedPlaintext} handleChange={(newValue) => setPlaintext(newValue)}/> 
                     : <CryptographicTextArea mode="ciphertext" value={ciphertext} lastUsedValue={lastUsedCiphertext} handleChange={(newValue) => setCiphertext(newValue)}/> }
                 </Col>
-
-                <Col xs={12} sm={12} md={12} lg={12} xl={1}  xxl={1} className="d-flex align-items-center justify-content-center mb-1">
-                    <GuidelineArrow/>
-                </Col>
-
-                <Col xs={12} sm={12} md={12} lg={12} xl={2}  xxl={2} className="d-flex align-items-center justify-content-center mb-5 ps-0 pe-0">
-                    <Form.Group className="ps-0 pe-0">
+                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
+                className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
+                    <Form.Group>
                         <Form.Label>
                             Key
                         </Form.Label>
                         <InputGroup className="mb-1">
-                            <InputGroup.Text>Length</InputGroup.Text>
+                            <InputGroup.Text>Length (2 - 100)</InputGroup.Text>
                             <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
                         </InputGroup>
-                        <div className="d-flex flex-xl-column flex-xxl-column gap-1">
-                            <KeyGrid keyValue={key} showLabels={true} handleKeyUpdate={(keyValue) => setKey(keyValue)}  itemsPerRow={5} />
-                            <Button variant="primary" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
-                            onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
-                        </div>
+                        <KeyGrid keyValue={key} showLabels={true} handleKeyUpdate={(keyValue) => setKey(keyValue)}  itemsPerRow={10} />
                     </Form.Group>
                 </Col>
+            </Row>
 
-                <Col xs={12} sm={12} md={12} lg={12} xl={1}  xxl={1} className="d-flex align-items-center justify-content-center mb-1">
-                    <GuidelineArrow/>
+            <Row className="mt-3 mb-3">
+                <Col xs={5}></Col>
+                <Col className="d-flex justify-content-center align-items-center">
+                    <Button variant="primary" size="lg" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
+                            onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                 </Col>
+                <Col xs={5}></Col>
+            </Row>
 
-                <Col xs={12} sm={12} md={12} lg={12} xl={4}  xxl={4} className="d-flex align-items-center mb-1">
-                {activeTab == 0 ? 
-                    <CryptographicTextArea active={false} mode="ciphertext" value={lastUsedCiphertext} lastUsedValue={lastUsedCiphertext}/>
-                    : <CryptographicTextArea active={false} mode="plaintext" value={lastUsedPlaintext} lastUsedValue={lastUsedPlaintext}/>}
+            <Row>
+                <Col xs={5}>
                 </Col>
-            </Form>
+                <Col className="d-flex justify-content-center align-items-center">
+                    <i className="bi bi-arrow-down h1"></i>
+                </Col>
+                <Col xs={5}>
+                </Col>
+            </Row>
+
+            <Row>
+                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
+                    {activeTab == 0 ? 
+                        <CryptographicTextArea active={false} mode="ciphertext" value={lastUsedCiphertext} lastUsedValue={lastUsedCiphertext}/>
+                        : <CryptographicTextArea active={false} mode="plaintext" value={lastUsedPlaintext} lastUsedValue={lastUsedPlaintext}/>}
+                </Col>
+            </Row>
+
         </Container>
     )
 }

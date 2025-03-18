@@ -3,7 +3,7 @@ import { createRef, useEffect, useRef, useState } from "react";
 import { Stack, InputGroup, Form} from 'react-bootstrap'
 import KeyGridRow from "../keyGridRow/keyGridRow";
 
-const KeyGrid = ({ keyValue, handleKeyUpdate, showLabels = false, itemsPerRow = 10 }) => {
+const KeyGrid = ({ keyValue, handleKeyUpdate, allowDuplicates = false, permittedValuesRegex = /\D/g, showLabels = false, itemsPerRow = 10 }) => {
 
     var grid = Chunk(Object.entries(keyValue).map(entry => ({index: entry[0], value: entry[1], reference: createRef()})), itemsPerRow);
     const container = useRef();
@@ -16,15 +16,22 @@ const KeyGrid = ({ keyValue, handleKeyUpdate, showLabels = false, itemsPerRow = 
         var keyArray = Object.entries(keyValue);
         var newValue;
 
-        if (keyArray.filter(x => x[1] == currentValue + value.toUpperCase()).length != 0) newValue = currentValue + value.toUpperCase();
-        else if (keyArray.filter(x => x[1] == currentValue + value.toLowerCase()).length != 0) newValue = currentValue + value.toLowerCase();
-        else if (keyArray.filter(x => x[1] == value).length != 0) newValue = value;
-        else if (keyArray.filter(x => x[1] == value.toUpperCase()).length != 0) newValue = value.toUpperCase();
-        else if (keyArray.filter(x => x[1] == value.toLowerCase()).length != 0) newValue = value.toLowerCase();
-        else return;
-
-        var previousIndexOfNewValue = keyArray.filter(x => x[1] == newValue)[0][0];
-        handleKeyUpdate({...keyValue, [currentIndex]: newValue, [previousIndexOfNewValue]: currentValue});
+        if (!allowDuplicates) {
+            if (keyArray.filter(x => x[1] == currentValue + value.toUpperCase()).length != 0) newValue = currentValue + value.toUpperCase();
+            else if (keyArray.filter(x => x[1] == currentValue + value.toLowerCase()).length != 0) newValue = currentValue + value.toLowerCase();
+            else if (keyArray.filter(x => x[1] == value).length != 0) newValue = value;
+            else if (keyArray.filter(x => x[1] == value.toUpperCase()).length != 0) newValue = value.toUpperCase();
+            else if (keyArray.filter(x => x[1] == value.toLowerCase()).length != 0) newValue = value.toLowerCase();
+            else return;
+    
+            var previousIndexOfNewValue = keyArray.filter(x => x[1] == newValue)[0][0];
+            handleKeyUpdate({...keyValue, [currentIndex]: newValue, [previousIndexOfNewValue]: currentValue});
+        }
+        else {
+            newValue = value.replace(permittedValuesRegex, '');
+            if (newValue == "") return;
+            handleKeyUpdate({...keyValue, [currentIndex]: newValue});
+        }
     }
 
     const handleIndexNavigation = (keydown) => {
