@@ -5,6 +5,7 @@ import CryptographicTextArea from "@/app/components/cryptographicTextArea/crypto
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import KeyGrid from "@/app/components/keyGrid/keyGrid";
 import Chunk from "@/app/utilities/arrayUtilities";
+import KeyMatrix from "@/app/components/keyMatrix/keyMatrix";
 
 
 const Home = () => {
@@ -116,7 +117,7 @@ const Home = () => {
                             <InputGroup.Text>Size n x n (2 - 10)</InputGroup.Text>
                             <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
                         </InputGroup>
-                        <KeyGrid keyValue={key} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} allowDuplicates={true}  itemsPerRow={keyLength} />
+                        <KeyMatrix keyValue={key} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} allowDuplicates={true}  itemsPerRow={keyLength} />
                     </Form.Group>
                 </Col>
             </Row>
