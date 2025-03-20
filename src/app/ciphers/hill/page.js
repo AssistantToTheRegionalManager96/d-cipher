@@ -3,9 +3,8 @@ import { useState } from "react";
 import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
-import KeyGrid from "@/app/components/keyGrid/keyGrid";
-import Chunk from "@/app/utilities/arrayUtilities";
 import KeyMatrix from "@/app/components/keyMatrix/keyMatrix";
+import {InvertMod, LUDecompose, ForwardSolve, BackwardSolve} from "@/app/utilities/mathUtils";
 
 
 const Home = () => {
@@ -23,31 +22,47 @@ const Home = () => {
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
 
-        // for (var i = 0; i < plaintext.length % key.length; i++) plaintext = plaintext + "x"; // Uncomment for padding
+        var asciiIndexInput = 'a'.charCodeAt(0);
+        var asciiIndexOutput = 'A'.charCodeAt(0);
 
         var k = 0;
-        var keyLength = Object.entries(key).length;
 
-        for (var i = 0; i < plaintext.length; i++)
-        {
-            encryptedChars.push(plaintext[parseInt(key[k]) + ((Math.floor(i/keyLength)) * keyLength)]);
-            k = (k + 1) % keyLength;
+        while (k < plaintext.length) {
+            for (var i = 0; i < key.length; i++) {
+                var sum = 0;
+                for (var j = 0; j < key.length; j++) {
+                    sum = sum + key[j][i] * (plaintext.charCodeAt(k + j) - asciiIndexInput);
+                }
+
+                encryptedChars[k+ i] = String.fromCharCode((sum % 26) + asciiIndexOutput);
+            }
+
+            k = k + key.length;
         }
 
         return encryptedChars.join("");
     }
 
     const decrypt = (ciphertext, key) => {
-        // Invert key
-        var keyArray = Object.entries(key);
-        var keyInv = new Array(keyArray.length);
+        var decryptedChars = [];
 
-        for (var i = 0; i < keyArray.length; i++) {
-            keyInv[keyArray[i][1]] = keyArray[i][0]
+        var asciiIndexInput = 'A'.charCodeAt(0);
+        var asciiIndexOutput = 'a'.charCodeAt(0);
+
+        var matrices = LUDecompose(key);
+
+        for (var i = 0; i < ciphertext.length; i = i + key.length) {
+            var y = ciphertext.slice(i, i + key.length).split("").map(c => c.charCodeAt(0) - asciiIndexInput);
+
+            var b = ForwardSolve(matrices.upper, y, 26);
+            var x = BackwardSolve(matrices.lower, b, 26);
+
+            for (var j = 0; j < x.length; j++) {
+                decryptedChars[i + j] = String.fromCharCode(x[j] + asciiIndexOutput);
+            }
         }
 
-        // Encrypt using inverted key
-        return encrypt(ciphertext, keyInv.join(""));
+        return decryptedChars.join("");
     }
 
     const handleKeyLengthChange = (value) => {
@@ -114,7 +129,7 @@ const Home = () => {
                             Key
                         </Form.Label>
                         <InputGroup className="mb-1">
-                            <InputGroup.Text>Size n x n (2 - 10)</InputGroup.Text>
+                            <InputGroup.Text>Size (2 - 10)</InputGroup.Text>
                             <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
                         </InputGroup>
                         <KeyMatrix keyValue={key} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} allowDuplicates={true}  itemsPerRow={keyLength} />

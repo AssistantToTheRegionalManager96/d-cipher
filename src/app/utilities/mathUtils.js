@@ -38,14 +38,14 @@ const FindPrimeFactors = (n) => {
 
 const LUDecompose = (matrix, n = 26) => {
     var size = matrix[0].length;
-    var lower = new Array(size).fill(0);
-    var upper = new Array(size).fill(0);;
+    var lower = new Array(size).fill(0).map(row => new Array(size).fill(0));
+    var upper = new Array(size).fill(0).map(row => new Array(size).fill(0));
 
     for (var i = 0; i < size; i++) {
         for (var k = i; k < size; k++) {
             var sum = 0;
             for (var j = 0; j < i; j++) {
-                sum = (sum + lower[i][j] + upper[j][k]) % n;
+                sum = (sum + lower[i][j] * upper[j][k]) % n;
             }
             upper[i][k] = ((matrix[i][k] - sum) % n + n) % n;
         }
@@ -71,7 +71,7 @@ const LUDecompose = (matrix, n = 26) => {
 const ForwardSolve = (upper, y, n) => {
     var size = upper[0].length;
     var sum = 0;
-    var b = new Array(size).fill(0);;
+    var b = new Array(size).fill(0);
 
     for (var i = 0; i < size; i++) {
         sum = y[i];
@@ -84,10 +84,10 @@ const ForwardSolve = (upper, y, n) => {
     return b;
 }
 
-const BackwardSolve = (lower, b) => {
+const BackwardSolve = (lower, b, n) => {
     var size = lower[0].length;
     var tmp;
-    var x = new Array(size).fill(0);;
+    var x = new Array(size).fill(0);
 
     for (var i = size - 1; i >= 0; i--) {
         tmp = b[i];
@@ -103,13 +103,13 @@ const BackwardSolve = (lower, b) => {
 
 
 const ModuloDivide = (a, b, m) => {
-    return ((a%m) * (ModuloInvert(b, m) % m) % m);
+    return ((a % m) * (ModuloInvert(b, m) % m)) % m;
 }
 
 const ModuloInvert = (a, m) => {
     var inv = 0;
-    while ((a * inv) % m != 1) inv = inv++;
+    while ((a * inv) % m != 1) inv = inv + 1;
     return inv;
 }
 
-export default InvertMod;
+export  { InvertMod, LUDecompose, ForwardSolve, BackwardSolve };

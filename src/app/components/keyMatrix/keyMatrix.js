@@ -6,12 +6,12 @@ const KeyMatrix = ({ keyValue, handleKeyUpdate, showLabels = false, itemsPerRow 
     var gridArray = keyValue.map(row => row.map(col => ({label: "", placeholder: 0, value:col.toString(), reference: createRef()})));
 
     const handleGridUpdate = (position, value) => {
-        // var currentValue = gridArray[position.row][position.col].value;
         var keyCopy = JSON.parse(JSON.stringify(keyValue));
 
-        // var newValue = (currentValue + value.replace(/\D/g,''));
-        var newValue = value.replace(/\D/g,'');
-        keyCopy[position.row][position.col] = parseInt(newValue);
+        var newValue = parseInt(value.replace(/\D/g,''));
+        if (isNaN(newValue)) newValue = 0;
+
+        keyCopy[position.row][position.col] = newValue;
         handleKeyUpdate(keyCopy);
     }
 
