@@ -5,6 +5,7 @@ import CryptographicTextArea from "@/app/components/cryptographicTextArea/crypto
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import KeyMatrix from "@/app/components/keyMatrix/keyMatrix";
 import {InvertMod, LUDecompose, ForwardSolve, BackwardSolve} from "@/app/utilities/mathUtils";
+import PaddingMenu from "@/app/components/paddingMenu/paddingMenu";
 
 
 const Home = () => {
@@ -18,6 +19,7 @@ const Home = () => {
         [0, 0]
     ]);
     const [keyLength, setKeyLength] = useState(2);
+    const [paddingType, setPaddingType] = useState(0);
 
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
@@ -68,7 +70,7 @@ const Home = () => {
     const handleKeyLengthChange = (value) => {
         var length = parseInt(value);
 
-        if (isNaN(length) || length > 100 || length < 2 || length == keyLength) return;
+        if (isNaN(length) || length > 10 || length < 2 || length == keyLength) return;
 
         var newKey = JSON.parse(JSON.stringify(key));
 
@@ -124,16 +126,27 @@ const Home = () => {
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
-                    <Form.Group>
-                        <Form.Label>
-                            Key
-                        </Form.Label>
-                        <InputGroup className="mb-1">
-                            <InputGroup.Text>Size (2 - 10)</InputGroup.Text>
-                            <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
-                        </InputGroup>
-                        <KeyMatrix keyValue={key} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} allowDuplicates={true}  itemsPerRow={keyLength} />
-                    </Form.Group>
+                    <Container>
+                        <Row>
+                            <Col>
+                                <PaddingMenu paddingType={paddingType} handlePaddingTypeChange={(type) => setPaddingType(type)}/>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Form.Group>
+                                <Form.Label>
+                                    Key
+                                </Form.Label>
+                                <InputGroup className="mb-1">
+                                    <InputGroup.Text>Size (2 - 10)</InputGroup.Text>
+                                    <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
+                                </InputGroup>
+                                <KeyMatrix keyValue={key} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} allowDuplicates={true}  itemsPerRow={keyLength} />
+                            </Form.Group>
+                        </Row>
+                    </Container>
+                    
+
                 </Col>
             </Row>
 
