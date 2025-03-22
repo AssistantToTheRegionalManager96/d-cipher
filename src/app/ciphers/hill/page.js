@@ -18,8 +18,13 @@ const Home = () => {
         [0, 0],
         [0, 0]
     ]);
+
     const [keyLength, setKeyLength] = useState(2);
+    const [keyLengthDisplay, setKeyLengthDisplay] = useState(keyLength);
     const [paddingType, setPaddingType] = useState(0);
+
+    const keyMinLength = 2;
+    const keyMaxLength = 20;
 
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
@@ -67,10 +72,19 @@ const Home = () => {
         return decryptedChars.join("");
     }
 
-    const handleKeyLengthChange = (value) => {
-        var length = parseInt(value);
+    const handleKeyLengthChange = (element) => {
+        var length = parseInt(element.value);
 
-        if (isNaN(length) || length > 10 || length < 2 || length == keyLength) return;
+        if (isNaN(length)) {
+            setKeyLengthDisplay("");
+            element.classList.add("is-invalid");
+            return;
+        }
+        else if (length > keyMaxLength || length < keyMinLength) {
+            setKeyLengthDisplay(length);
+            element.classList.add("is-invalid");
+            return;
+        }
 
         var newKey = JSON.parse(JSON.stringify(key));
 
@@ -92,28 +106,35 @@ const Home = () => {
 
         setKey(newKey);
         setKeyLength(length);
+        setKeyLengthDisplay(length);
+        element.classList.remove("is-invalid");
     }
 
 
     const handleRunButton = () => {
-        if (activeTab == 0) {
-            var encryptedText = encrypt(plaintext, key);
+        var a = LUDecompose(key);
 
-            setLastUsedCiphertext(encryptedText);
-            setCiphertext(encryptedText);
-            setLastUsedPlaintext(plaintext);
-        }
-        else {
-            var decryptedText = decrypt(ciphertext, key);
+        console.log(a.upper);
+        console.log(a.lower);
 
-            setLastUsedPlaintext(decryptedText);
-            setPlaintext(decryptedText);
-            setLastUsedCiphertext(ciphertext);
-        }
+        // if (activeTab == 0) {
+        //     var encryptedText = encrypt(plaintext, key);
+
+        //     setLastUsedCiphertext(encryptedText);
+        //     setCiphertext(encryptedText);
+        //     setLastUsedPlaintext(plaintext);
+        // }
+        // else {
+        //     var decryptedText = decrypt(ciphertext, key);
+
+        //     setLastUsedPlaintext(decryptedText);
+        //     setPlaintext(decryptedText);
+        //     setLastUsedCiphertext(ciphertext);
+        // }
     }
 
     return (
-        <Container className="mt-5">
+        <Form as={Container} noValidate className="mt-5">
             <Row>
                 <CipherMenu activeTab={activeTab} setActiveTab={setActiveTab}>Hill Cipher</CipherMenu>
             </Row>
@@ -137,9 +158,11 @@ const Home = () => {
                                 <Form.Label>
                                     Key
                                 </Form.Label>
-                                <InputGroup className="mb-1">
+
+                                <InputGroup className="mb-1" hasValidation>
                                     <InputGroup.Text>Size (2 - 10)</InputGroup.Text>
-                                    <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
+                                    <Form.Control type="number" placeholder={keyLength} value={keyLengthDisplay} onChange={(e) => handleKeyLengthChange(e.target)}></Form.Control>
+                                    <Form.Control.Feedback type="invalid">Provide input in range ({keyMinLength}-{keyMaxLength})</Form.Control.Feedback>
                                 </InputGroup>
                                 <KeyMatrix keyValue={key} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} allowDuplicates={true}  itemsPerRow={keyLength} />
                             </Form.Group>
@@ -177,7 +200,7 @@ const Home = () => {
                 </Col>
             </Row>
 
-        </Container>
+        </Form>
     )
 }
 
