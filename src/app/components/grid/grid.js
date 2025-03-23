@@ -2,7 +2,7 @@ import { createRef, useEffect, useRef, useState } from "react";
 import { Stack } from 'react-bootstrap'
 import GridRow from "../gridRow/gridRow";
 
-const Grid = ({ gridArray, handleGridArrayUpdate, showLabels = false}) => {
+const Grid = ({ gridArray, handleGridArrayUpdate = () => {},  showLabels = false}) => {
     var gridRefs = gridArray.map(row => row.map(col => ({...col, reference: createRef()})));
     const container = useRef();
     const [currentIndex, setCurrentIndex] = useState({row: "", col: ""});

@@ -2,7 +2,7 @@ import Chunk from "@/app/utilities/arrayUtilities";
 import { createRef } from "react";
 import Grid from "../grid/grid";
 
-const KeyMatrix = ({ keyValue, handleKeyUpdate, showLabels = false, itemsPerRow = 10 }) => {
+const KeyMatrix = ({ keyValue, handleKeyUpdate, onBlur = () => {}, isValid = true, showLabels = false, itemsPerRow = 10 }) => {
     var gridArray = keyValue.map(row => row.map(col => ({label: "", placeholder: 0, value:col.toString(), reference: createRef()})));
 
     const handleGridUpdate = (position, value) => {
@@ -16,7 +16,9 @@ const KeyMatrix = ({ keyValue, handleKeyUpdate, showLabels = false, itemsPerRow 
     }
 
     return(
-        <Grid gridArray={gridArray} handleGridArrayUpdate={handleGridUpdate} showLabels={showLabels} itemsPerRow={itemsPerRow} />
+        <div className={"d-flex " + (isValid ? "" : "is-invalid border border-danger rounded")} onBlur={(e) => onBlur(e)}>
+            <Grid gridArray={gridArray} handleGridArrayUpdate={handleGridUpdate} showLabels={showLabels} itemsPerRow={itemsPerRow} onBlur={(e) => onBlur(e)}/>
+        </div>
     )
 }
 

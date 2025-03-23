@@ -3,7 +3,7 @@ import { useState } from "react";
 import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
-import {InvertMod} from "@/app/utilities/mathUtils";
+import {ModuloInvert} from "@/app/utilities/mathUtils";
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -35,7 +35,7 @@ const Home = () => {
 
         var asciiIndexInput = 'A'.charCodeAt(0);
         var asciiIndexOutput = 'a'.charCodeAt(0);
-        var ainv = InvertMod(key.A, 26)
+        var ainv = ModuloInvert(key.A, 26)
 
         ciphertext.split("").forEach((character) => {
             var charCode = character.charCodeAt(0);

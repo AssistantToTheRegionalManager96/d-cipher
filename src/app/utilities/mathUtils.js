@@ -1,42 +1,27 @@
 
-const InvertMod = (input, modulo) => {
-    if (!FindCoprimesSmallerThan(modulo).includes(input)) throw new Error("The input must be a coprime of the modulo");
+// MODULO ACTIONS
+
+const ModuloInvert = (input, modulo) => {
+    var g = GreatestCommonDenominator(input, modulo);
+    if (g != 1) throw new Error("Modulo invert does not exist")
 
     var inv = 0;
     while((input * inv) % modulo != 1) inv = inv + 1;
     return inv;
 }
 
-const FindCoprimesSmallerThan = (n) => {
-    var coprimes = [];
-    var primeFactorsOfN = FindPrimeFactors(n);
-
-    for (var i = 1; i < n; i++)
-    {
-        var primeFactors = FindPrimeFactors(i);
-        if (primeFactors.filter(value => primeFactorsOfN.includes(value)).length == 0) coprimes.push(i);
-    }
-
-    return coprimes;
+const ModuloDivide = (a, b, m) => {
+    return ((a * ModuloInvert(b, m)) % m);
 }
 
-const FindPrimeFactors = (n) => {
-    var primeFactors = []
-
-    for (var i = 2; i*i <= n; i++)
-    {
-        while (n % i == 0)
-        {
-            primeFactors.push(i);
-            n = n / i;
-        }
-    }
-
-    if (n > 1) primeFactors.push(n);
-    return primeFactors;
+const GreatestCommonDenominator = (a,b) => {
+    if (b == 0) return a;
+    return GreatestCommonDenominator(b, a % b);
 }
 
 const LUDecompose = (matrix, n = 26) => {
+    if (matrix.length == 0 || matrix.length != matrix[0].length) throw new Error("Input must be a square matrix of non-zero size");
+
     var size = matrix[0].length;
     var lower = new Array(size).fill(0).map(row => new Array(size).fill(0));
     var upper = new Array(size).fill(0).map(row => new Array(size).fill(0));
@@ -100,16 +85,23 @@ const BackwardSolve = (lower, b, n) => {
     return x;
 }
 
+const Determinant = (matrix, m = 26) => {
+    if (matrix.length == 0 || matrix.length != matrix[0].length) throw new Error("Input must be a square matrix of non-zero size");
 
+    var matrices = LUDecompose(matrix);
+    var upperProduct = Diagonal(matrices.upper).reduce((a, b) => a * b, 1);
+    var lowerProduct = Diagonal(matrices.lower).reduce((a, b) => a * b, 1);
 
-const ModuloDivide = (a, b, m) => {
-    return ((a % m) * (ModuloInvert(b, m) % m)) % m;
+    return (upperProduct * lowerProduct) % m;
 }
 
-const ModuloInvert = (a, m) => {
-    var inv = 0;
-    while ((a * inv) % m != 1) inv = inv + 1;
-    return inv;
+const Diagonal = (matrix) => {
+    if (matrix.length == 0 || matrix.length != matrix[0].length) throw new Error("Input must be a square matrix of non-zero size");
+
+    var diagonal = [];
+    for (var i = 0; i < matrix.length; i++) diagonal.push(matrix[i][i]);
+
+    return diagonal;
 }
 
-export  { InvertMod, LUDecompose, ForwardSolve, BackwardSolve };
+export  { ModuloInvert, LUDecompose, ForwardSolve, BackwardSolve, Determinant, GreatestCommonDenominator };

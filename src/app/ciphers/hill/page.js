@@ -4,24 +4,29 @@ import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import KeyMatrix from "@/app/components/keyMatrix/keyMatrix";
-import {InvertMod, LUDecompose, ForwardSolve, BackwardSolve} from "@/app/utilities/mathUtils";
+import {LUDecompose, ForwardSolve, BackwardSolve, Determinant, GreatestCommonDenominator} from "@/app/utilities/mathUtils";
 import PaddingMenu from "@/app/components/paddingMenu/paddingMenu";
 
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
+
     const [plaintext, setPlaintext] = useState("");
     const [ciphertext, setCiphertext] = useState("");
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
+
+    const [paddingType, setPaddingType] = useState(0);
+
+    const [keyLength, setKeyLength] = useState(2);
+    const [keyLengthDisplay, setKeyLengthDisplay] = useState(keyLength);
     const [key, setKey] = useState([
         [0, 0],
         [0, 0]
     ]);
 
-    const [keyLength, setKeyLength] = useState(2);
-    const [keyLengthDisplay, setKeyLengthDisplay] = useState(keyLength);
-    const [paddingType, setPaddingType] = useState(0);
+    const [keyValid, setKeyValid] = useState(true);
+    const [inputValid, setInputValid] = useState(false);
 
     const keyMinLength = 2;
     const keyMaxLength = 20;
@@ -56,18 +61,25 @@ const Home = () => {
         var asciiIndexInput = 'A'.charCodeAt(0);
         var asciiIndexOutput = 'a'.charCodeAt(0);
 
-        var matrices = LUDecompose(key);
+        try {
+            var matrices = LUDecompose(key);
 
-        for (var i = 0; i < ciphertext.length; i = i + key.length) {
-            var y = ciphertext.slice(i, i + key.length).split("").map(c => c.charCodeAt(0) - asciiIndexInput);
-
-            var b = ForwardSolve(matrices.upper, y, 26);
-            var x = BackwardSolve(matrices.lower, b, 26);
-
-            for (var j = 0; j < x.length; j++) {
-                decryptedChars[i + j] = String.fromCharCode(x[j] + asciiIndexOutput);
+            for (var i = 0; i < ciphertext.length; i = i + key.length) {
+                var y = ciphertext.slice(i, i + key.length).split("").map(c => c.charCodeAt(0) - asciiIndexInput);
+    
+                var b = ForwardSolve(matrices.upper, y, 26);
+                var x = BackwardSolve(matrices.lower, b, 26);
+    
+                for (var j = 0; j < x.length; j++) {
+                    decryptedChars[i + j] = String.fromCharCode(x[j] + asciiIndexOutput);
+                }
             }
         }
+        catch (ex) {
+            console.log(ex) // Insert error handling here
+        }
+
+
 
         return decryptedChars.join("");
     }
@@ -110,27 +122,32 @@ const Home = () => {
         element.classList.remove("is-invalid");
     }
 
+    const handleKeyLoseFocus = (e) => {
+        try {
+            var det = Determinant(key);
+            if (GreatestCommonDenominator(det, 26) != 1) setKeyValid(false);
+            else setKeyValid(true);
+        }
+        catch {
+            setKeyValid(false);
+        }
+    }
 
     const handleRunButton = () => {
-        var a = LUDecompose(key);
+        if (activeTab == 0) {
+            var encryptedText = encrypt(plaintext, key);
 
-        console.log(a.upper);
-        console.log(a.lower);
+            setLastUsedCiphertext(encryptedText);
+            setCiphertext(encryptedText);
+            setLastUsedPlaintext(plaintext);
+        }
+        else {
+            var decryptedText = decrypt(ciphertext, key);
 
-        // if (activeTab == 0) {
-        //     var encryptedText = encrypt(plaintext, key);
-
-        //     setLastUsedCiphertext(encryptedText);
-        //     setCiphertext(encryptedText);
-        //     setLastUsedPlaintext(plaintext);
-        // }
-        // else {
-        //     var decryptedText = decrypt(ciphertext, key);
-
-        //     setLastUsedPlaintext(decryptedText);
-        //     setPlaintext(decryptedText);
-        //     setLastUsedCiphertext(ciphertext);
-        // }
+            setLastUsedPlaintext(decryptedText);
+            setPlaintext(decryptedText);
+            setLastUsedCiphertext(ciphertext);
+        }
     }
 
     return (
@@ -164,7 +181,10 @@ const Home = () => {
                                     <Form.Control type="number" placeholder={keyLength} value={keyLengthDisplay} onChange={(e) => handleKeyLengthChange(e.target)}></Form.Control>
                                     <Form.Control.Feedback type="invalid">Provide input in range ({keyMinLength}-{keyMaxLength})</Form.Control.Feedback>
                                 </InputGroup>
-                                <KeyMatrix keyValue={key} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} allowDuplicates={true}  itemsPerRow={keyLength} />
+                                <InputGroup hasValidation>
+                                    <KeyMatrix keyValue={key} isValid={keyValid} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} onBlur={(e) => handleKeyLoseFocus(e)} allowDuplicates={true}  itemsPerRow={keyLength} />
+                                    <Form.Control.Feedback type="invalid">Matrix must be invertible</Form.Control.Feedback>
+                                </InputGroup>
                             </Form.Group>
                         </Row>
                     </Container>
@@ -176,7 +196,7 @@ const Home = () => {
             <Row className="mt-3 mb-3">
                 <Col xs={5}></Col>
                 <Col className="d-flex justify-content-center align-items-center">
-                    <Button variant="primary" size="lg" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
+                    <Button variant="primary" size="lg" disabled={!inputValid} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                 </Col>
                 <Col xs={5}></Col>
