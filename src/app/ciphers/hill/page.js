@@ -6,6 +6,7 @@ import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-boot
 import KeyMatrix from "@/app/components/keyMatrix/keyMatrix";
 import {LUDecompose, ForwardSolve, BackwardSolve, Determinant, GreatestCommonDenominator} from "@/app/utilities/mathUtils";
 import PaddingMenu from "@/app/components/paddingMenu/paddingMenu";
+import InputTextArea from "@/app/components/inputTextArea/inputTextArea";
 
 
 const Home = () => {
@@ -26,12 +27,18 @@ const Home = () => {
     ]);
 
     const [keyValid, setKeyValid] = useState(true);
-    const [inputValid, setInputValid] = useState(false);
+    const [inputValid, setInputValid] = useState(true);
 
     const keyMinLength = 2;
     const keyMaxLength = 20;
 
     const encrypt = (plaintext, key) => {
+
+        
+
+
+
+
         var encryptedChars = [];
 
         var asciiIndexInput = 'a'.charCodeAt(0);
@@ -158,9 +165,10 @@ const Home = () => {
 
             <Row className="mt-5 border rounded p-2">
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
-                    {activeTab == 0 ? 
+                    <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet="abcdefghijklmnopqrstuvwxyz" handleChange={(value) => setPlaintext(value)} />
+                    {/* {activeTab == 0 ? 
                     <CryptographicTextArea mode="plaintext" value={plaintext} lastUsedValue={lastUsedPlaintext} handleChange={(newValue) => setPlaintext(newValue)}/> 
-                    : <CryptographicTextArea mode="ciphertext" value={ciphertext} lastUsedValue={lastUsedCiphertext} handleChange={(newValue) => setCiphertext(newValue)}/> }
+                    : <CryptographicTextArea mode="ciphertext" value={ciphertext} lastUsedValue={lastUsedCiphertext} handleChange={(newValue) => setCiphertext(newValue)}/> } */}
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
