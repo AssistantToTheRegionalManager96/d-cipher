@@ -1,5 +1,5 @@
 import { Form, InputGroup } from "react-bootstrap";
-import KeyMatrix from "@/app/components/keyMatrix/keyMatrix";
+import KeyMatrix from "@/app/components/grids/keyMatrix/keyMatrix";
 import { useEffect, useState } from "react";
 import { Determinant, GreatestCommonDenominator } from "@/app/utilities/mathUtils";
 
@@ -72,7 +72,9 @@ const HillCipherKey = ({keyValue, handleKeyValueChange, isValid, handleIsValidCh
             <Form.Control.Feedback type="invalid">Provide input in range ({minLength}-{maxLength})</Form.Control.Feedback>
         </InputGroup>
         <InputGroup hasValidation>
-            <KeyMatrix keyValue={keyValue} isValid={isValid} showLabels={false} handleKeyUpdate={(keyValue) => handleKeyValueChange(keyValue)} itemsPerRow={keyValue.length} />
+            <div className={isValid ? "" : "is-invalid border border-danger rounded-1"}>
+                <KeyMatrix keyValue={keyValue} showLabels={false} handleKeyUpdate={(keyValue) => handleKeyValueChange(keyValue)} itemsPerRow={keyValue.length} />
+            </div>
             <Form.Control.Feedback type="invalid">Matrix must be invertible</Form.Control.Feedback>
         </InputGroup>
     </Form.Group>

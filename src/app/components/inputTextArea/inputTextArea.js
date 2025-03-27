@@ -1,6 +1,7 @@
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { useEffect } from "react";
+import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 
-const InputTextArea = ({value, lastUsedValue, label, alphabet, handleChange, maxLength = 5000, active = true, rowCount = 5}) => {
+const InputTextArea = ({value, isValid, handleIsValidChange, lastUsedValue, label, alphabet, handleChange, maxLength = 5000, active = true, rowCount = 5}) => {
     
     var regex = new RegExp(`[^${alphabet}]`, 'gi');
     
@@ -10,15 +11,19 @@ const InputTextArea = ({value, lastUsedValue, label, alphabet, handleChange, max
         handleChange(newValue);
     }
 
+    useEffect(() => {
+        handleIsValidChange(value.length > 0 && value.length < maxLength)
+    })
 
     return (
         <Form.Group as={Container}>
-            <Form.Label>
-                {`${label} (${maxLength - value.length} characters left)`}
-            </Form.Label>
-            <Row>
-                <Form.Control as="textarea" rows={rowCount} value={value} disabled={!active} onChange={(e) => {handleInput(e.target.value)}} />
-            </Row>
+            <InputGroup as={Row} className="w-auto" hasValidation>
+                <Form.Label>
+                    {`${label} (${maxLength - value.length} characters left)`}
+                </Form.Label>
+                <Form.Control as="textarea" className={isValid ? "" : "is-invalid"} rows={rowCount} value={value} disabled={!active} onChange={(e) => {handleInput(e.target.value)}} />
+                <Form.Control.Feedback type="invalid">Insert valid plaintext</Form.Control.Feedback>
+            </InputGroup>
             <Row className="mt-1">
                 <Col xs={9} sm={9} md={9} lg={9} xl={9} xxl={9} className="d-flex justify-content-start align-items-center ps-0">
                 {lastUsedValue != "" && lastUsedValue != value ? `The ${label} has changed since last operation` : ""}

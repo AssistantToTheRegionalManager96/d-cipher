@@ -1,45 +1,32 @@
 "use client"
 import { useState } from "react";
 import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
-import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
-import KeyMatrix from "@/app/components/keyMatrix/keyMatrix";
 import {LUDecompose, ForwardSolve, BackwardSolve, Determinant, GreatestCommonDenominator} from "@/app/utilities/mathUtils";
 import PaddingMenu from "@/app/components/paddingMenu/paddingMenu";
 import InputTextArea from "@/app/components/inputTextArea/inputTextArea";
-import HillCipherKey from "@/app/components/hillCipherKey/hillCipherKey";
+import HillCipherKey from "@/app/components/cipherKeys/hillCipherKey/hillCipherKey";
 
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
 
-    const [plaintext, setPlaintext] = useState("");
+    const [plaintext, setPlaintext] = useState("Test");
     const [ciphertext, setCiphertext] = useState("");
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
 
     const [paddingType, setPaddingType] = useState(0);
-
-    const [keyLength, setKeyLength] = useState(2);
-    const [keyLengthDisplay, setKeyLengthDisplay] = useState(keyLength);
     const [key, setKey] = useState([
-        [0, 0],
-        [0, 0]
+        [1, 2],
+        [3, 5]
     ]);
 
     const [keyValid, setKeyValid] = useState(true);
-    const [inputValid, setInputValid] = useState(true);
-
-    const keyMinLength = 2;
-    const keyMaxLength = 20;
+    const [textValid, setTextValid] = useState(true);
+    const [paddingValid, setPaddingValid] = useState(true);
 
     const encrypt = (plaintext, key) => {
-
-        
-
-
-
-
         var encryptedChars = [];
 
         var asciiIndexInput = 'a'.charCodeAt(0);
@@ -92,55 +79,6 @@ const Home = () => {
         return decryptedChars.join("");
     }
 
-    const handleKeyLengthChange = (element) => {
-        var length = parseInt(element.value);
-
-        if (isNaN(length)) {
-            setKeyLengthDisplay("");
-            element.classList.add("is-invalid");
-            return;
-        }
-        else if (length > keyMaxLength || length < keyMinLength) {
-            setKeyLengthDisplay(length);
-            element.classList.add("is-invalid");
-            return;
-        }
-
-        var newKey = JSON.parse(JSON.stringify(key));
-
-        if (length > keyLength) {
-            for (var i = keyLength; i < length; i++) {
-                newKey.forEach(row => {
-                    row.push(0);
-                })
-
-                newKey.push(new Array(i + 1).fill(0))
-            }
-        }
-        else {
-            newKey = newKey.slice(0, length);
-            newKey.forEach((row, index) => {
-                newKey[index] = row.slice(0, length);
-            })
-        }
-
-        setKey(newKey);
-        setKeyLength(length);
-        setKeyLengthDisplay(length);
-        element.classList.remove("is-invalid");
-    }
-
-    const handleKeyLoseFocus = (e) => {
-        try {
-            var det = Determinant(key);
-            if (GreatestCommonDenominator(det, 26) != 1) setKeyValid(false);
-            else setKeyValid(true);
-        }
-        catch {
-            setKeyValid(false);
-        }
-    }
-
     const handleRunButton = () => {
         if (activeTab == 0) {
             var encryptedText = encrypt(plaintext, key);
@@ -166,7 +104,13 @@ const Home = () => {
 
             <Row className="mt-5 border rounded p-2">
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
-                    <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet="abcdefghijklmnopqrstuvwxyz" handleChange={(value) => setPlaintext(value)} />
+                {activeTab == 0 ? 
+                    <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet="abcdefghijklmnopqrstuvwxyz" 
+                    handleChange={(value) => setPlaintext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                    : 
+                    <InputTextArea value={ciphertext} label="Ciphertext" lastUsedValue={lastUsedCiphertext} alphabet="abcdefghijklmnopqrstuvwxyz" 
+                    handleChange={(value) => setCiphertext(value)} />
+                }
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
@@ -190,7 +134,7 @@ const Home = () => {
             <Row className="mt-3 mb-3">
                 <Col xs={5}></Col>
                 <Col className="d-flex justify-content-center align-items-center">
-                    <Button variant="primary" size="lg" disabled={!inputValid} 
+                    <Button variant="primary" size="lg" disabled={!(textValid && keyValid && paddingValid)} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                 </Col>
                 <Col xs={5}></Col>
@@ -209,8 +153,17 @@ const Home = () => {
             <Row>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
-                        <CryptographicTextArea active={false} mode="ciphertext" value={lastUsedCiphertext} lastUsedValue={lastUsedCiphertext}/>
-                        : <CryptographicTextArea active={false} mode="plaintext" value={lastUsedPlaintext} lastUsedValue={lastUsedPlaintext}/>}
+                        <Form.Group as={Stack}>
+                            <Form.Label>Ciphertext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={ciphertext} disabled />
+                        </Form.Group>
+                        :
+                        <Form.Group as={Stack}>
+                            <Form.Label>Plaintext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={plaintext} disabled />
+                        </Form.Group>
+
+                    }
                 </Col>
             </Row>
 

@@ -2,6 +2,9 @@ const { Container, Row, Col, Form, InputGroup, Stack } = require("react-bootstra
 
 
 const PaddingMenu = ({paddingType, handlePaddingTypeChange, specificCharacter = ""}) => {
+    
+
+
     return (
         <Form.Group>
             <Form.Label>

@@ -3,7 +3,7 @@ import { useState } from "react";
 import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
-import KeyGrid from "@/app/components/keyGrid/keyGrid";
+import KeyGrid from "@/app/components/grids/keyGrid/keyGrid";
 
 
 const Home = () => {
