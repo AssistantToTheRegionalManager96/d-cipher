@@ -7,6 +7,7 @@ import KeyMatrix from "@/app/components/keyMatrix/keyMatrix";
 import {LUDecompose, ForwardSolve, BackwardSolve, Determinant, GreatestCommonDenominator} from "@/app/utilities/mathUtils";
 import PaddingMenu from "@/app/components/paddingMenu/paddingMenu";
 import InputTextArea from "@/app/components/inputTextArea/inputTextArea";
+import HillCipherKey from "@/app/components/hillCipherKey/hillCipherKey";
 
 
 const Home = () => {
@@ -166,9 +167,6 @@ const Home = () => {
             <Row className="mt-5 border rounded p-2">
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
                     <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet="abcdefghijklmnopqrstuvwxyz" handleChange={(value) => setPlaintext(value)} />
-                    {/* {activeTab == 0 ? 
-                    <CryptographicTextArea mode="plaintext" value={plaintext} lastUsedValue={lastUsedPlaintext} handleChange={(newValue) => setPlaintext(newValue)}/> 
-                    : <CryptographicTextArea mode="ciphertext" value={ciphertext} lastUsedValue={lastUsedCiphertext} handleChange={(newValue) => setCiphertext(newValue)}/> } */}
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
@@ -179,21 +177,9 @@ const Home = () => {
                             </Col>
                         </Row>
                         <Row>
-                            <Form.Group>
-                                <Form.Label>
-                                    Key
-                                </Form.Label>
-
-                                <InputGroup className="mb-1" hasValidation>
-                                    <InputGroup.Text>Size (2 - 10)</InputGroup.Text>
-                                    <Form.Control type="number" placeholder={keyLength} value={keyLengthDisplay} onChange={(e) => handleKeyLengthChange(e.target)}></Form.Control>
-                                    <Form.Control.Feedback type="invalid">Provide input in range ({keyMinLength}-{keyMaxLength})</Form.Control.Feedback>
-                                </InputGroup>
-                                <InputGroup hasValidation>
-                                    <KeyMatrix keyValue={key} isValid={keyValid} showLabels={false} handleKeyUpdate={(keyValue) => setKey(keyValue)} onBlur={(e) => handleKeyLoseFocus(e)} allowDuplicates={true}  itemsPerRow={keyLength} />
-                                    <Form.Control.Feedback type="invalid">Matrix must be invertible</Form.Control.Feedback>
-                                </InputGroup>
-                            </Form.Group>
+                            <Col>
+                                <HillCipherKey keyValue={key} handleKeyValueChange={(value) => setKey(value)} isValid={keyValid} handleIsValidChange={(value) => setKeyValid(value)} />
+                            </Col>
                         </Row>
                     </Container>
                     
