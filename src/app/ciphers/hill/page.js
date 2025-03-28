@@ -17,6 +17,7 @@ const Home = () => {
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
 
     const [paddingType, setPaddingType] = useState(0);
+    const [paddingSpecificCharacter, setPaddingSpecificCharacter] = useState("x");
     const [key, setKey] = useState([
         [1, 2],
         [3, 5]
@@ -109,7 +110,7 @@ const Home = () => {
                     handleChange={(value) => setPlaintext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
                     : 
                     <InputTextArea value={ciphertext} label="Ciphertext" lastUsedValue={lastUsedCiphertext} alphabet="abcdefghijklmnopqrstuvwxyz" 
-                    handleChange={(value) => setCiphertext(value)} />
+                    handleChange={(value) => setCiphertext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
                 }
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
@@ -117,7 +118,9 @@ const Home = () => {
                     <Container>
                         <Row>
                             <Col>
-                                <PaddingMenu paddingType={paddingType} handlePaddingTypeChange={(type) => setPaddingType(type)}/>
+                                <PaddingMenu paddingType={paddingType} handlePaddingTypeChange={(type) => setPaddingType(type)} alphabet="abcdefghijklmnopqrstuvwxyz" 
+                                specificCharacter={paddingSpecificCharacter} handleSpecificCharacterChange={(char) => setPaddingSpecificCharacter(char)}
+                                isValid={paddingValid} handleIsValidChange={(isValid) => setPaddingValid(isValid)}/>
                             </Col>
                         </Row>
                         <Row>
@@ -151,7 +154,8 @@ const Home = () => {
             </Row>
 
             <Row>
-                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
+                <Col></Col>
+                <Col xs={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
                         <Form.Group as={Stack}>
                             <Form.Label>Ciphertext</Form.Label>
@@ -162,9 +166,9 @@ const Home = () => {
                             <Form.Label>Plaintext</Form.Label>
                             <Form.Control as="textarea" rows={5} value={plaintext} disabled />
                         </Form.Group>
-
                     }
                 </Col>
+                <Col></Col>
             </Row>
 
         </Form>

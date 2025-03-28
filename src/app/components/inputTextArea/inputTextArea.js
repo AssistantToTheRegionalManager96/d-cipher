@@ -22,7 +22,7 @@ const InputTextArea = ({value, isValid, handleIsValidChange, lastUsedValue, labe
                     {`${label} (${maxLength - value.length} characters left)`}
                 </Form.Label>
                 <Form.Control as="textarea" className={isValid ? "" : "is-invalid"} rows={rowCount} value={value} disabled={!active} onChange={(e) => {handleInput(e.target.value)}} />
-                <Form.Control.Feedback type="invalid">Insert valid plaintext</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">Insert valid text</Form.Control.Feedback>
             </InputGroup>
             <Row className="mt-1">
                 <Col xs={9} sm={9} md={9} lg={9} xl={9} xxl={9} className="d-flex justify-content-start align-items-center ps-0">
