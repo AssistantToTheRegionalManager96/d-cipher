@@ -21,21 +21,7 @@ const PaddingMenu = ({paddingType, handlePaddingTypeChange, alphabet, specificCh
     })
 
     return (
-        // <Form.Group>
-        //     <Form.Label>
-        //         Padding
-        //     </Form.Label>
-        //     <Form.Check type="radio" label="Random characters" name="paddingType" checked={paddingType == 0} onChange={() => handlePaddingTypeChange(0)}/>
-        //     <Stack className="d-inline-flex" direction="horizontal" gap={5}>
-        //         <Form.Check type="radio" label="Specific Character:" name="paddingType" checked={paddingType == 1} onChange={() => handlePaddingTypeChange(1)}/>
-        //         <Stack className="justify-self-end">
-        //             <Form.Control className={isValid ? "" : "is-invalid"} type="text" maxLength={1} disabled={paddingType == 0} 
-        //             value={specificCharacter} onChange={(e) => handleSpecificCharacterInput(e.target.value)}/>
-        //             <Form.Control.Feedback type="invalid">Insert valid padding character</Form.Control.Feedback>
-        //         </Stack>
-        //     </Stack>
-        // </Form.Group>
-        <Container>
+        <Form.Group as={Container}>
             <Form.Label as={Row}>Padding</Form.Label>
             <Row>
                 <Col className="d-flex p-0 ms-1 mb-1 align-items-center">
@@ -54,7 +40,7 @@ const PaddingMenu = ({paddingType, handlePaddingTypeChange, alphabet, specificCh
                     <Form.Control.Feedback type="invalid">Insert valid padding character</Form.Control.Feedback>
                 </Col>
             </Row>
-        </Container>
+        </Form.Group>
     )
 }
 

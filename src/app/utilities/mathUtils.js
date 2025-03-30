@@ -77,7 +77,7 @@ const BackwardSolve = (lower, b, n) => {
     for (var i = size - 1; i >= 0; i--) {
         tmp = b[i];
         for (var j = i + 1; j < size; j++) {
-            tmp = ((tmp - (lower[j][i] * b[j])) % n + n) % n;
+            tmp = ((tmp - (lower[j][i] * x[j])) % n + n) % n;
         }
         x[i] = ModuloDivide(tmp, lower[i][i], n);
     }

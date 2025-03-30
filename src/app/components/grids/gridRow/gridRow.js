@@ -23,7 +23,7 @@ const GridRow = ({ cells, rowType, showLabels = false, handleUpdate, handleNavig
         }
 
         var valueGroup = (
-            <InputGroup className={valuesRowType}>
+            <InputGroup className={valuesRowType + ''}>
             {cells.map((cell, cellIndex) => {
                 return (<Form.Control key={cellIndex} size="sm" className="text-center" type="text" placeholder={cell.placeholder} value={cell.value}
                     onChange={(e) => handleUpdate(cellIndex, e.target.value)} onKeyDown={(e) => handleNavigation(e.key)}
@@ -33,10 +33,10 @@ const GridRow = ({ cells, rowType, showLabels = false, handleUpdate, handleNavig
 
         var labelGroup = (
             <InputGroup className={labelsRowType}>
-            {cells.map((cell, index) => {
-                    return (<Form.Control key={index} size="sm" className="text-center" type="text" value={cell.label} disabled></Form.Control>)
-                })}
-        </InputGroup>
+                {cells.map((cell, index) => {
+                        return (<Form.Control key={index} size="sm" className="text-center" type="text" value={cell.label} disabled></Form.Control>)
+                    })}
+            </InputGroup>
         )
 
         if (showLabels) return (<>{labelGroup}{valueGroup}</>)

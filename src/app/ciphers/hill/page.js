@@ -10,8 +10,9 @@ import HillCipherKey from "@/app/components/cipherKeys/hillCipherKey/hillCipherK
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
+    const [alphabet, setAlphabet] = useState("abcdefghijklmnopqrstuvwxyz");
 
-    const [plaintext, setPlaintext] = useState("Test");
+    const [plaintext, setPlaintext] = useState("test");
     const [ciphertext, setCiphertext] = useState("");
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
@@ -29,20 +30,17 @@ const Home = () => {
 
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
-
-        var asciiIndexInput = 'a'.charCodeAt(0);
-        var asciiIndexOutput = 'A'.charCodeAt(0);
+        var alphabetChars = alphabet.split("");
 
         var k = 0;
-
         while (k < plaintext.length) {
             for (var i = 0; i < key.length; i++) {
                 var sum = 0;
                 for (var j = 0; j < key.length; j++) {
-                    sum = sum + key[j][i] * (plaintext.charCodeAt(k + j) - asciiIndexInput);
+                    sum = sum + key[j][i] * (alphabetChars.indexOf(plaintext.charAt(k + j)));
                 }
 
-                encryptedChars[k+ i] = String.fromCharCode((sum % 26) + asciiIndexOutput);
+                encryptedChars[k+ i] = alphabetChars[sum % alphabetChars.length];
             }
 
             k = k + key.length;
@@ -53,47 +51,56 @@ const Home = () => {
 
     const decrypt = (ciphertext, key) => {
         var decryptedChars = [];
+        var alphabetChars = alphabet.split("");
 
-        var asciiIndexInput = 'A'.charCodeAt(0);
-        var asciiIndexOutput = 'a'.charCodeAt(0);
+        var matrices = LUDecompose(key);
 
-        try {
-            var matrices = LUDecompose(key);
+        for (var i = 0; i < ciphertext.length; i = i + key.length) {
+            var y = ciphertext.slice(i, i + key.length).split("").map(c => alphabetChars.indexOf(c.charAt(0)));
+            var b = ForwardSolve(matrices.upper, y, alphabetChars.length);
+            var x = BackwardSolve(matrices.lower, b, alphabetChars.length);
 
-            for (var i = 0; i < ciphertext.length; i = i + key.length) {
-                var y = ciphertext.slice(i, i + key.length).split("").map(c => c.charCodeAt(0) - asciiIndexInput);
-    
-                var b = ForwardSolve(matrices.upper, y, 26);
-                var x = BackwardSolve(matrices.lower, b, 26);
-    
-                for (var j = 0; j < x.length; j++) {
-                    decryptedChars[i + j] = String.fromCharCode(x[j] + asciiIndexOutput);
-                }
+            for (var j = 0; j < x.length; j++) {
+                decryptedChars[i + j] = alphabetChars[x[j]];
             }
         }
-        catch (ex) {
-            console.log(ex) // Insert error handling here
-        }
-
-
 
         return decryptedChars.join("");
     }
 
     const handleRunButton = () => {
-        if (activeTab == 0) {
-            var encryptedText = encrypt(plaintext, key);
+        try {
+            if (activeTab == 0) {
+                var plaintextCopy = plaintext;
 
-            setLastUsedCiphertext(encryptedText);
-            setCiphertext(encryptedText);
-            setLastUsedPlaintext(plaintext);
+                while (plaintextCopy.length % key.length != 0) {
+                    var char = paddingType == 0 ? alphabet.charAt(Math.random() * alphabet.length) : paddingSpecificCharacter;
+                    plaintextCopy = plaintextCopy + char;
+                }
+
+                var encryptedText = encrypt(plaintextCopy, key);
+                setPlaintext(plaintextCopy);
+                setLastUsedPlaintext(plaintextCopy);
+                setCiphertext(encryptedText);
+                setLastUsedCiphertext(encryptedText);
+            }
+            else {
+                var ciphertextCopy = ciphertext;
+
+                while (ciphertextCopy.length % key.length != 0) {
+                    var char = paddingType == 0 ? alphabet.charAt(Math.random() * alphabet.length) : paddingSpecificCharacter;
+                    ciphertextCopy = ciphertextCopy + char;
+                }
+
+                var decryptedText = decrypt(ciphertextCopy, key);
+                setCiphertext(ciphertextCopy);
+                setLastUsedCiphertext(ciphertextCopy);
+                setPlaintext(decryptedText);
+                setLastUsedPlaintext(decryptedText);
+            }
         }
-        else {
-            var decryptedText = decrypt(ciphertext, key);
-
-            setLastUsedPlaintext(decryptedText);
-            setPlaintext(decryptedText);
-            setLastUsedCiphertext(ciphertext);
+        catch (exception) {
+            console.log(exception);
         }
     }
 
@@ -116,7 +123,7 @@ const Home = () => {
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
                     <Container>
-                        <Row>
+                        <Row className="mb-2 border-bottom pb-2">
                             <Col>
                                 <PaddingMenu paddingType={paddingType} handlePaddingTypeChange={(type) => setPaddingType(type)} alphabet="abcdefghijklmnopqrstuvwxyz" 
                                 specificCharacter={paddingSpecificCharacter} handleSpecificCharacterChange={(char) => setPaddingSpecificCharacter(char)}

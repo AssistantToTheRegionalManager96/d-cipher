@@ -1,4 +1,4 @@
-import { Form, InputGroup } from "react-bootstrap";
+import { Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import KeyMatrix from "@/app/components/grids/keyMatrix/keyMatrix";
 import { useEffect, useState } from "react";
 import { Determinant, GreatestCommonDenominator } from "@/app/utilities/mathUtils";
@@ -60,24 +60,29 @@ const HillCipherKey = ({keyValue, handleKeyValueChange, isValid, handleIsValidCh
     })
 
     return (
-    <Form.Group>
-        <Form.Label>
+    <Form.Group as={Container}>
+        <Form.Label as={Row}>
             Key
         </Form.Label>
-
-        <InputGroup className="mb-1" hasValidation>
-            <InputGroup.Text>Size (2 - 10)</InputGroup.Text>
-            <Form.Control className={keyLengthValid ? "" : "is-invalid"} type="number" placeholder={keyValue.length} value={keyLengthDisplay} 
-            onChange={(e) => handleLengthChange(e.target.value)}/>
-            <Form.Control.Feedback type="invalid">Provide input in range ({minLength}-{maxLength})</Form.Control.Feedback>
+        <InputGroup as={Row} className="w-auto mb-2">
+            <Col className="d-flex align-items-center p-0">
+                Matrix side length ({minLength}-{maxLength}):
+            </Col>
+            <Col className="p-0">
+                <Form.Control className={keyLengthValid ? "" : "is-invalid"} type="number" placeholder={keyValue.length} value={keyLengthDisplay} 
+                onChange={(e) => handleLengthChange(e.target.value)}/>
+                <Form.Control.Feedback type="invalid">Provide input in range ({minLength}-{maxLength})</Form.Control.Feedback>
+            </Col>
         </InputGroup>
-        <InputGroup hasValidation>
-            <div className={isValid ? "" : "is-invalid border border-danger rounded-1"}>
+        <InputGroup className="p-0" hasValidation>
+            <Col className={"p-0" + (isValid ? "" : "is-invalid border border-danger rounded-1")}>
                 <KeyMatrix keyValue={keyValue} showLabels={false} handleKeyUpdate={(keyValue) => handleKeyValueChange(keyValue)} itemsPerRow={keyValue.length} />
-            </div>
-            <Form.Control.Feedback type="invalid">Matrix must be invertible</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">Matrix must be invertible</Form.Control.Feedback>
+            </Col>
         </InputGroup>
     </Form.Group>
+
+
     )
 }
 
