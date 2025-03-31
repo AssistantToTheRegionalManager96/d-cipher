@@ -53,6 +53,34 @@ const LUDecompose = (matrix, n = 26) => {
     }
 }
 
+const LUDecompose2 = (matrix, n = 26) => {
+    if (matrix.length == 0 || matrix.length != matrix[0].length) throw new Error("Input must be a square matrix of non-zero size");
+
+    var size = matrix[0].length;
+    var lower = new Array(size).fill(0).map(row => new Array(size).fill(0));
+    var upper = new Array(size).fill(0).map(row => new Array(size).fill(0));
+
+    for (var i = 0; i < size; i++) {
+        // Loop for u
+        for (var k = 0; k < size; k++) {
+            var sum = 0;
+            for (var j = 0; j < i; j++) {
+                sum = (sum + (lower[i][j] * upper[j][k])) % n;
+            }
+            upper[i][k] = ModuloDivide(lower[i][i], ((matrix[i][k] - sum) % n + n) % n,  n);
+        }
+
+        // Loop for l
+        for (var k = 0; k < size; k++) {
+            var sum = 0;
+            for (var j = 0; j < i; j++) {
+                sum = sum + ()
+            }
+            lower[k][i] = ModuloDivide(upper[i][i], ((matrix[k][i] - sum) % n + n) % n, n);
+        }
+    }
+}
+
 const ForwardSolve = (upper, y, n) => {
     var size = upper[0].length;
     var sum = 0;
