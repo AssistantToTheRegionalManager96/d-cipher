@@ -112,20 +112,20 @@ const Home = () => {
 
             <Row className="mt-5 border rounded p-2">
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
-                {activeTab == 0 ? 
-                    <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet="abcdefghijklmnopqrstuvwxyz" 
-                    handleChange={(value) => setPlaintext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
-                    : 
-                    <InputTextArea value={ciphertext} label="Ciphertext" lastUsedValue={lastUsedCiphertext} alphabet="abcdefghijklmnopqrstuvwxyz" 
-                    handleChange={(value) => setCiphertext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
-                }
+                    {activeTab == 0 ? 
+                        <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet={alphabet} 
+                        handleChange={(value) => setPlaintext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                        : 
+                        <InputTextArea value={ciphertext} label="Ciphertext" lastUsedValue={lastUsedCiphertext} alphabet={alphabet} 
+                        handleChange={(value) => setCiphertext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                    }
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
                     <Container>
                         <Row className="mb-2 border-bottom pb-2">
                             <Col>
-                                <PaddingMenu paddingType={paddingType} handlePaddingTypeChange={(type) => setPaddingType(type)} alphabet="abcdefghijklmnopqrstuvwxyz" 
+                                <PaddingMenu paddingType={paddingType} handlePaddingTypeChange={(type) => setPaddingType(type)} alphabet={alphabet} 
                                 specificCharacter={paddingSpecificCharacter} handleSpecificCharacterChange={(char) => setPaddingSpecificCharacter(char)}
                                 isValid={paddingValid} handleIsValidChange={(isValid) => setPaddingValid(isValid)}/>
                             </Col>

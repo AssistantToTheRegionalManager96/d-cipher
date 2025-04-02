@@ -3,71 +3,100 @@ import { useState } from "react";
 import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
+import InputTextArea from "@/app/components/inputTextArea/inputTextArea";
+import PaddingMenu from "@/app/components/paddingMenu/paddingMenu";
 
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
-    const [plaintext, setPlaintext] = useState("");
+    const [alphabet, setAlphabet] = useState("abcdefghijklmnopqrstuvwxyz");
+
+    const [plaintext, setPlaintext] = useState("test");
     const [ciphertext, setCiphertext] = useState("");
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
-    const [key, setKey] = useState("");
+
+    const [paddingType, setPaddingType] = useState(0);
+    const [paddingSpecificCharacter, setPaddingSpecificCharacter] = useState("x");
+
+    const [key, setKey] = useState("test");
     const [lastUsedKey, setLastUsedKey] = useState("");
 
-    const encrypt = (plaintext, key) => {
-        var encryptedChars = [];
-        var asciiIndexInput = 'a'.charCodeAt(0);
-        var asciiIndexOutput = 'A'.charCodeAt(0);
+    const [keyValid, setKeyValid] = useState(true);
+    const [textValid, setTextValid] = useState(true);
+    const [paddingValid, setPaddingValid] = useState(true);
 
-        // for (var i = 0; i < plaintext.length % key.length; i++) plaintext = plaintext + "x"; // Uncomment for padding
+
+    const encrypt = (input, key) => {
+        var encryptedChars = [];
+        var alphabetChars = alphabet.split("");
 
         var k = 0;
-        var keyLength = Object.entries(key).length;
 
-        for (var i = 0; i < plaintext.length; i++)
+        for (var i = 0; i < input.length; i++)
         {
-            encryptedChars.push(String.fromCharCode(((plaintext.charCodeAt(i) - asciiIndexInput) + (key.charCodeAt(k) - asciiIndexInput + 1)) % 26 + asciiIndexOutput));
-            k = (k + 1) % keyLength;
+            encryptedChars.push(alphabetChars[(alphabetChars.indexOf(input.charAt(i)) + alphabetChars.indexOf(key.charAt(k))) % alphabetChars.length]);
+            k = (k + 1) % key.length;
         }
 
         return encryptedChars.join("");
     }
 
-    const decrypt = (ciphertext, key) => {
+    const decrypt = (input, key) => {
         var decryptedChars = [];
-
-        var asciiIndexInput = 'A'.charCodeAt(0);
-        var asciiIndexOutput = 'a'.charCodeAt(0);
+        var alphabetChars = alphabet.split("");
 
         var k = 0;
-        var keyLength = Object.entries(key).length;
 
-        for (var i = 0; i < ciphertext.length; i++)
+        for (var i = 0; i < input.length; i++)
         {
-            decryptedChars.push(String.fromCharCode((((ciphertext.charCodeAt(i) - asciiIndexInput) - (key.charCodeAt(k) - asciiIndexOutput + 1)) % 26 + 26) % 26 + asciiIndexOutput));
-            k = (k + 1) % keyLength;
+            decryptedChars.push(
+                alphabetChars[
+                    ((alphabetChars.indexOf(input.charAt(i)) - alphabetChars.indexOf(key.charAt(k))) % alphabetChars.length + alphabetChars.length) % alphabetChars.length
+                ]);
+            k = (k + 1) % key.length;
         }
 
         return decryptedChars.join("");
     }
 
     const handleRunButton = () => {
-        if (activeTab == 0) {
-            var encryptedText = encrypt(plaintext, key);
+        try {
+            if (activeTab == 0) {
+                var plaintextCopy = plaintext;
 
-            setLastUsedCiphertext(encryptedText);
-            setLastUsedKey(key);
-            setCiphertext(encryptedText);
-            setLastUsedPlaintext(plaintext);
-        }
-        else {
-            var decryptedText = decrypt(ciphertext, key);
+                while (plaintextCopy.length % key.length != 0) {
+                    var char = paddingType == 0 ? alphabet.charAt(Math.random() * alphabet.length) : paddingSpecificCharacter;
+                    plaintextCopy = plaintextCopy + char;
+                }
 
-            setLastUsedPlaintext(decryptedText);
-            setLastUsedKey(key);
-            setPlaintext(decryptedText);
-            setLastUsedCiphertext(ciphertext);
+                var encryptedText = encrypt(plaintextCopy, key);
+                setPlaintext(plaintextCopy);
+                setLastUsedPlaintext(plaintextCopy);
+                setCiphertext(encryptedText);
+                setLastUsedCiphertext(encryptedText);
+                setLastUsedKey(key);
+            }
+            else {
+                var ciphertextCopy = ciphertext;
+
+                while (ciphertextCopy.length % key.length != 0) {
+                    var char = paddingType == 0 ? alphabet.charAt(Math.random() * alphabet.length) : paddingSpecificCharacter;
+                    ciphertextCopy = ciphertextCopy + char;
+                }
+
+                var decryptedText = decrypt(ciphertextCopy, key);
+                setCiphertext(ciphertextCopy);
+                setLastUsedCiphertext(ciphertextCopy);
+                setPlaintext(decryptedText);
+                setLastUsedPlaintext(decryptedText);
+                setLastUsedKey(key);
+            }
         }
+        catch (error) {
+            console.log(error);
+        }
+
     }
 
     return (
@@ -77,26 +106,42 @@ const Home = () => {
             </Row>
 
             <Row className="mt-5 border rounded p-2">
-                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-start">
+                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
-                    <CryptographicTextArea mode="plaintext" value={plaintext} lastUsedValue={lastUsedPlaintext} handleChange={(newValue) => setPlaintext(newValue)}/> 
-                    : <CryptographicTextArea mode="ciphertext" value={ciphertext} lastUsedValue={lastUsedCiphertext} handleChange={(newValue) => setCiphertext(newValue)}/> }
+                        <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet={alphabet} 
+                        handleChange={(value) => setPlaintext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                        : 
+                        <InputTextArea value={ciphertext} label="Ciphertext" lastUsedValue={lastUsedCiphertext} alphabet={alphabet} 
+                        handleChange={(value) => setCiphertext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                    }
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
-                    <CryptographicTextArea mode="key" value={key} lastUsedValue={lastUsedKey} handleChange={(newValue) => setKey(newValue)}/>
+                                        <Container>
+                        <Row className="mb-2 border-bottom pb-2">
+                            <Col>
+                                <PaddingMenu paddingType={paddingType} handlePaddingTypeChange={(type) => setPaddingType(type)} alphabet={alphabet} 
+                                specificCharacter={paddingSpecificCharacter} handleSpecificCharacterChange={(char) => setPaddingSpecificCharacter(char)}
+                                isValid={paddingValid} handleIsValidChange={(isValid) => setPaddingValid(isValid)}/>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <InputTextArea value={key} label="Key" lastUsedValue={lastUsedKey} alphabet={alphabet} rowCount={3}
+                                handleChange={(value) => setKey(value)} isValid={keyValid} handleIsValidChange={(value) => setKeyValid(value)}/>
+                            </Col>
+                        </Row>
+                    </Container>
                 </Col>
             </Row>
 
             <Row className="mt-3 mb-3">
-                <Col xs={5}>
-                </Col>
+                <Col xs={5}></Col>
                 <Col className="d-flex justify-content-center align-items-center">
-                    <Button variant="primary" size="lg" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
-                        onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
+                    <Button variant="primary" size="lg" disabled={!(textValid && keyValid && paddingValid)} 
+                            onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                 </Col>
-                <Col xs={5}>
-                </Col>
+                <Col xs={5}></Col>
             </Row>
 
             <Row>
@@ -110,12 +155,23 @@ const Home = () => {
             </Row>
 
             <Row>
-                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
+                <Col></Col>
+                <Col xs={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
-                        <CryptographicTextArea active={false} mode="ciphertext" value={lastUsedCiphertext} lastUsedValue={lastUsedCiphertext}/>
-                        : <CryptographicTextArea active={false} mode="plaintext" value={lastUsedPlaintext} lastUsedValue={lastUsedPlaintext}/>}
+                        <Form.Group as={Stack}>
+                            <Form.Label>Ciphertext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={ciphertext} disabled />
+                        </Form.Group>
+                        :
+                        <Form.Group as={Stack}>
+                            <Form.Label>Plaintext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={plaintext} disabled />
+                        </Form.Group>
+                    }
                 </Col>
+                <Col></Col>
             </Row>
+
         </Container>
     )
 }

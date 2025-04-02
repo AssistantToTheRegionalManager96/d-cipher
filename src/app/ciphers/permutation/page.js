@@ -1,17 +1,24 @@
 "use client"
 import { useState } from "react";
 import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
-import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
-import KeyGrid from "@/app/components/grids/keyGrid/keyGrid";
+import PermutationCipherKey from "@/app/components/cipherKeys/permutationCipherKey/permutationCipherKey";
+import InputTextArea from "@/app/components/inputTextArea/inputTextArea";
+import PaddingMenu from "@/app/components/paddingMenu/paddingMenu";
 
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
-    const [plaintext, setPlaintext] = useState("");
+    const [alphabet, setAlphabet] = useState("abcdefghijklmnopqrstuvwxyz");
+
+
+    const [plaintext, setPlaintext] = useState("test");
     const [ciphertext, setCiphertext] = useState("");
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
+
+    const [paddingType, setPaddingType] = useState(0);
+    const [paddingSpecificCharacter, setPaddingSpecificCharacter] = useState("x");
     const [key, setKey] = useState({
         0: '0',
         1: '1',
@@ -24,12 +31,13 @@ const Home = () => {
         8: '8',
         9: '9'
     });
-    const [keyLength, setKeyLength] = useState(10);
+    
+    const [textValid, setTextValid] = useState(true);
+    const [paddingValid, setPaddingValid] = useState(true);
 
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
 
-        // for (var i = 0; i < plaintext.length % key.length; i++) plaintext = plaintext + "x"; // Uncomment for padding
 
         var k = 0;
         var keyLength = Object.entries(key).length;
@@ -56,48 +64,43 @@ const Home = () => {
         return encrypt(ciphertext, keyInv.join(""));
     }
 
-    const handleKeyLengthChange = (value) => {
-        var length = parseInt(value);
-
-        if (isNaN(length) || length > 100 || length < 2) return;
-
-        var keyArray = Object.entries(key);
-
-        if (length == keyArray.length) return;
-        else if (length < keyArray.length) {
-            while(length < keyArray.length) {
-                var last = keyArray.pop();
-
-                var idx = keyArray.findIndex((element) => element[1] == last[0]);
-                ~idx && (keyArray[idx][1] = last[1]);
-            }
-        }
-        else {
-            for (var i = keyArray.length; i < length; i++) {
-                keyArray.push([i.toString(), i.toString()])
-            }
-        }
-
-        setKey(Object.fromEntries(keyArray));
-        setKeyLength(length);
-    }
-
-
     const handleRunButton = () => {
-        if (activeTab == 0) {
-            var encryptedText = encrypt(plaintext, key);
+        try {
+            if (activeTab == 0) {
+                var plaintextCopy = plaintext;
+                var keyLength = Object.entries(key).length;
 
-            setLastUsedCiphertext(encryptedText);
-            setCiphertext(encryptedText);
-            setLastUsedPlaintext(plaintext);
-        }
-        else {
-            var decryptedText = decrypt(ciphertext, key);
+                while (plaintextCopy.length % keyLength != 0) {
+                    var char = paddingType == 0 ? alphabet.charAt(Math.random() * alphabet.length) : paddingSpecificCharacter;
+                    plaintextCopy = plaintextCopy + char;
+                }
 
-            setLastUsedPlaintext(decryptedText);
-            setPlaintext(decryptedText);
-            setLastUsedCiphertext(ciphertext);
+                var encryptedText = encrypt(plaintextCopy, key);
+                setPlaintext(plaintextCopy);
+                setLastUsedPlaintext(plaintextCopy);
+                setCiphertext(encryptedText);
+                setLastUsedCiphertext(encryptedText);
+            }
+            else {
+                var ciphertextCopy = ciphertext;
+                var keyLength = Object.entries(key).length;
+
+                while (ciphertextCopy.length % keyLength != 0) {
+                    var char = paddingType == 0 ? alphabet.charAt(Math.random() * alphabet.length) : paddingSpecificCharacter;
+                    ciphertextCopy = ciphertextCopy + char;
+                }
+
+                var decryptedText = decrypt(ciphertextCopy, key);
+                setCiphertext(ciphertextCopy);
+                setLastUsedCiphertext(ciphertextCopy);
+                setPlaintext(decryptedText);
+                setLastUsedPlaintext(decryptedText);
+            }
         }
+        catch (error) {
+            console.log(error);
+        }
+
     }
 
     return (
@@ -109,28 +112,36 @@ const Home = () => {
             <Row className="mt-5 border rounded p-2">
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
-                    <CryptographicTextArea mode="plaintext" value={plaintext} lastUsedValue={lastUsedPlaintext} handleChange={(newValue) => setPlaintext(newValue)}/> 
-                    : <CryptographicTextArea mode="ciphertext" value={ciphertext} lastUsedValue={lastUsedCiphertext} handleChange={(newValue) => setCiphertext(newValue)}/> }
+                        <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet={alphabet} 
+                        handleChange={(value) => setPlaintext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                        : 
+                        <InputTextArea value={ciphertext} label="Ciphertext" lastUsedValue={lastUsedCiphertext} alphabet={alphabet} 
+                        handleChange={(value) => setCiphertext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                    }
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
-                    <Form.Group>
-                        <Form.Label>
-                            Key
-                        </Form.Label>
-                        <InputGroup className="mb-1">
-                            <InputGroup.Text>Length (2 - 100)</InputGroup.Text>
-                            <Form.Control type="number" value={keyLength} onChange={(e) => handleKeyLengthChange(e.target.value)}></Form.Control>
-                        </InputGroup>
-                        <KeyGrid keyValue={key} showLabels={true} handleKeyUpdate={(keyValue) => setKey(keyValue)}  itemsPerRow={10} />
-                    </Form.Group>
+                    <Container>
+                        <Row className="mb-2 border-bottom pb-2">
+                            <Col>
+                                <PaddingMenu paddingType={paddingType} handlePaddingTypeChange={(type) => setPaddingType(type)} alphabet={alphabet} 
+                                specificCharacter={paddingSpecificCharacter} handleSpecificCharacterChange={(char) => setPaddingSpecificCharacter(char)}
+                                isValid={paddingValid} handleIsValidChange={(isValid) => setPaddingValid(isValid)}/>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <PermutationCipherKey keyValue={key} handleKeyValueChange={(value) => setKey(value)} />
+                            </Col>
+                        </Row>
+                    </Container>
                 </Col>
             </Row>
 
             <Row className="mt-3 mb-3">
                 <Col xs={5}></Col>
                 <Col className="d-flex justify-content-center align-items-center">
-                    <Button variant="primary" size="lg" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
+                    <Button variant="primary" size="lg" disabled={!(textValid && paddingValid)} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                 </Col>
                 <Col xs={5}></Col>
@@ -147,11 +158,21 @@ const Home = () => {
             </Row>
 
             <Row>
-                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
+                <Col></Col>
+                <Col xs={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
-                        <CryptographicTextArea active={false} mode="ciphertext" value={lastUsedCiphertext} lastUsedValue={lastUsedCiphertext}/>
-                        : <CryptographicTextArea active={false} mode="plaintext" value={lastUsedPlaintext} lastUsedValue={lastUsedPlaintext}/>}
+                        <Form.Group as={Stack}>
+                            <Form.Label>Ciphertext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={ciphertext} disabled />
+                        </Form.Group>
+                        :
+                        <Form.Group as={Stack}>
+                            <Form.Label>Plaintext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={plaintext} disabled />
+                        </Form.Group>
+                    }
                 </Col>
+                <Col></Col>
             </Row>
 
         </Container>
