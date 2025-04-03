@@ -4,17 +4,26 @@ import CipherMenu from "@/app/components/cipherMenu/cipherMenu";
 import CryptographicTextArea from "@/app/components/cryptographicTextArea/cryptographicTextArea";
 import { Button, Col, Container, Form, InputGroup, Row, Stack } from "react-bootstrap";
 import {ModuloInvert} from "@/app/utilities/mathUtils";
+import InputTextArea from "@/app/components/inputTextArea/inputTextArea";
+import AffineCipherKey from "@/app/components/cipherKeys/affineCipherKey/affineCipherKey";
 
 const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
-    const [plaintext, setPlaintext] = useState("");
+    const [alphabet, setAlphabet] = useState("abcdefghijklmnopqrstuvwxyz");
+
+    const [plaintext, setPlaintext] = useState("test");
     const [ciphertext, setCiphertext] = useState("");
     const [lastUsedPlaintext, setLastUsedPlaintext] = useState("");
     const [lastUsedCiphertext, setLastUsedCiphertext] = useState("");
+
     const [key, setKey] = useState({
         A: "",
         b: ""
     });
+
+    const [keyValid, setKeyValid] = useState(true);
+    const [textValid, setTextValid] = useState(true);
+
 
     const encrypt = (plaintext, key) => {
         var encryptedChars = [];
@@ -69,31 +78,26 @@ const Home = () => {
             </Row>
 
             <Row className="mt-5 border rounded p-2">
-                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
+            <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
-                    <CryptographicTextArea mode="plaintext" value={plaintext} lastUsedValue={lastUsedPlaintext} handleChange={(newValue) => setPlaintext(newValue)}/> 
-                    : <CryptographicTextArea mode="ciphertext" value={ciphertext} lastUsedValue={lastUsedCiphertext} handleChange={(newValue) => setCiphertext(newValue)}/> }
+                        <InputTextArea value={plaintext} label="Plaintext" lastUsedValue={lastUsedPlaintext} alphabet={alphabet} 
+                        handleChange={(value) => setPlaintext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                        : 
+                        <InputTextArea value={ciphertext} label="Ciphertext" lastUsedValue={lastUsedCiphertext} alphabet={alphabet} 
+                        handleChange={(value) => setCiphertext(value)} isValid={textValid} handleIsValidChange={(value) => setTextValid(value)}/>
+                    }
                 </Col>
                 <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} 
                 className="d-flex align-items-start justify-content-xs-center justify-content-sm-center justify-content-md-center justify-content-lg-end justify-content-xl-end justify-conten-xxl-end">
-                    <Form.Group>
-                        <Form.Label>
-                            Key
-                        </Form.Label>
-                            <InputGroup>
-                                <Form.Control type="number" value={key.A} min={1} max={26} step={2}  placeholder="A"
-                                onChange={(e) => {if (e.target.value % 2 != 0 && e.target.value < 26) setKey({...key, A: parseInt(e.target.value)})}}></Form.Control>
-                                <InputGroup.Text>x + </InputGroup.Text>
-                                <Form.Control type="number" value={key.b} onChange={(e) => setKey({...key, b: parseInt(e.target.value)})} placeholder="b"></Form.Control>
-                            </InputGroup>
-                    </Form.Group>
+                    <AffineCipherKey keyValue={key} handleKeyValueChange={(value) => setKey(value)} isValid={keyValid} 
+                    handleIsValidChange={(value) => setKeyValid(value)}alphabet={alphabet} />
                 </Col>
             </Row>
 
             <Row className="mt-3 mb-3">
                 <Col xs={5}></Col>
                 <Col className="d-flex justify-content-center align-items-center">
-                    <Button variant="primary" size="lg" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
+                    <Button variant="primary" size="lg" disabled={!(textValid && keyValid)} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                 </Col>
                 <Col xs={5}></Col>
@@ -110,11 +114,21 @@ const Home = () => {
             </Row>
 
             <Row>
-                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
+                <Col></Col>
+                <Col xs={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
-                        <CryptographicTextArea active={false} mode="ciphertext" value={lastUsedCiphertext} lastUsedValue={lastUsedCiphertext}/>
-                        : <CryptographicTextArea active={false} mode="plaintext" value={lastUsedPlaintext} lastUsedValue={lastUsedPlaintext}/>}
+                        <Form.Group as={Stack}>
+                            <Form.Label>Ciphertext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={ciphertext} disabled />
+                        </Form.Group>
+                        :
+                        <Form.Group as={Stack}>
+                            <Form.Label>Plaintext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={plaintext} disabled />
+                        </Form.Group>
+                    }
                 </Col>
+                <Col></Col>
             </Row>
         </Container>
     )

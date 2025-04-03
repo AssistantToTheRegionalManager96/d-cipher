@@ -19,7 +19,7 @@ const GreatestCommonDenominator = (a,b) => {
     return GreatestCommonDenominator(b, a % b);
 }
 
-const LUDecompose = (matrix, n = 26) => {
+const LUDecompose = (matrix, n) => {
     if (matrix.length == 0 || matrix.length != matrix[0].length) throw new Error("Input must be a square matrix of non-zero size");
 
     var size = matrix[0].length;
@@ -113,10 +113,10 @@ const BackwardSolve = (lower, b, n) => {
     return x;
 }
 
-const Determinant = (matrix, m = 26) => {
+const Determinant = (matrix, m) => {
     if (matrix.length == 0 || matrix.length != matrix[0].length) throw new Error("Input must be a square matrix of non-zero size");
 
-    var matrices = LUDecompose(matrix);
+    var matrices = LUDecompose(matrix, m);
     var upperProduct = Diagonal(matrices.upper).reduce((a, b) => a * b, 1);
     var lowerProduct = Diagonal(matrices.lower).reduce((a, b) => a * b, 1);
 

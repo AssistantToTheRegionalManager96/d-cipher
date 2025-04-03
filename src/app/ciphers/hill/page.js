@@ -132,7 +132,8 @@ const Home = () => {
                         </Row>
                         <Row>
                             <Col>
-                                <HillCipherKey keyValue={key} handleKeyValueChange={(value) => setKey(value)} isValid={keyValid} handleIsValidChange={(value) => setKeyValid(value)} />
+                                <HillCipherKey keyValue={key} handleKeyValueChange={(value) => setKey(value)} isValid={keyValid} 
+                                handleIsValidChange={(value) => setKeyValid(value)} alphabet={alphabet}/>
                             </Col>
                         </Row>
                     </Container>

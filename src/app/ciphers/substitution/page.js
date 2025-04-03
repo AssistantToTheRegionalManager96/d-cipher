@@ -45,7 +45,6 @@ const Home = () => {
     });
 
     const [textValid, setTextValid] = useState(true);
-    const [paddingValid, setPaddingValid] = useState(true);
 
 
     const encrypt = (plaintext, key) => {
@@ -122,7 +121,7 @@ const Home = () => {
             <Row className="mt-3 mb-3">
                 <Col xs={5}></Col>
                 <Col className="d-flex justify-content-center align-items-center">
-                    <Button variant="primary" size="lg" disabled={(activeTab == 0 && plaintext == "") || (activeTab == 1 && ciphertext == "")} 
+                    <Button variant="primary" size="lg" disabled={!(textValid)} 
                             onClick={handleRunButton}>{activeTab == 0 ? "Encrypt" : "Decrypt"}</Button>
                 </Col>
                 <Col xs={5}></Col>
@@ -139,11 +138,21 @@ const Home = () => {
             </Row>
 
             <Row>
-                <Col xs={12} sm={12} md={12} lg={6} xl={6}  xxl={6} className="d-flex align-items-center mb-1">
+                <Col></Col>
+                <Col xs={6} className="d-flex align-items-center mb-1">
                     {activeTab == 0 ? 
-                        <CryptographicTextArea active={false} mode="ciphertext" value={lastUsedCiphertext} lastUsedValue={lastUsedCiphertext}/>
-                        : <CryptographicTextArea active={false} mode="plaintext" value={lastUsedPlaintext} lastUsedValue={lastUsedPlaintext}/>}
+                        <Form.Group as={Stack}>
+                            <Form.Label>Ciphertext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={ciphertext} disabled />
+                        </Form.Group>
+                        :
+                        <Form.Group as={Stack}>
+                            <Form.Label>Plaintext</Form.Label>
+                            <Form.Control as="textarea" rows={5} value={plaintext} disabled />
+                        </Form.Group>
+                    }
                 </Col>
+                <Col></Col>
             </Row>
         </Container>
     )

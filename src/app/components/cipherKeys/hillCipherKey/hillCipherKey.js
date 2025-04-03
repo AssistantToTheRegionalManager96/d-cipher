@@ -3,7 +3,7 @@ import KeyMatrix from "@/app/components/grids/keyMatrix/keyMatrix";
 import { useEffect, useState } from "react";
 import { Determinant, GreatestCommonDenominator } from "@/app/utilities/mathUtils";
 
-const HillCipherKey = ({keyValue, handleKeyValueChange, isValid, handleIsValidChange}) => {
+const HillCipherKey = ({keyValue, handleKeyValueChange, isValid, handleIsValidChange, alphabet}) => {
 
     const minLength = 2;
     const maxLength = 20;
@@ -47,14 +47,15 @@ const HillCipherKey = ({keyValue, handleKeyValueChange, isValid, handleIsValidCh
         handleKeyValueChange(newKeyValue);
         setKeyLengthValid(true);
     }
-
+    
     useEffect(() => {
         try {
-            var det = Determinant(keyValue);
-            if (GreatestCommonDenominator(det, 26) != 1) handleIsValidChange(false);
+            var det = Determinant(keyValue, alphabet.length);
+            if (GreatestCommonDenominator(det, alphabet.length) != 1) handleIsValidChange(false);
             else handleIsValidChange(true);
         }
         catch (error) {
+            console.log(error);
             handleIsValidChange(false);
         }
     })

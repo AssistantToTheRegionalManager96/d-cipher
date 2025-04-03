@@ -87,7 +87,7 @@ const Home = () => {
                         </Form.Label>
                         <InputGroup>
                             <Form.Control type="number" value={key} onChange={(e) =>  {if (e.target.value < 1024) setKey(parseInt(e.target.value))}}></Form.Control>
-                            <InputGroup.Text>mod 26</InputGroup.Text>
+                            <InputGroup.Text>mod {alphabet.length}</InputGroup.Text>
                         </InputGroup>
                     </Form.Group>
                 </Col>
